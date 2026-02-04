@@ -1,0 +1,163 @@
+Metadata-Version: 2.4
+Name: biguasim
+Version: 1.0.0
+Summary: Autonomous Underwater Vehicle Simulator
+Home-page: https://bitbucket.org/frostlab/biguasim
+Author: Easton Potokar, Spencer Ashford
+Author-email: BYU FRoSt & PCCL Labs <contagon@byu.edu>
+License: MIT License
+Project-URL: Homepage, https://bitbucket.org/frostlab/biguasim
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy<=1.26.4
+Requires-Dist: scipy
+Requires-Dist: posix_ipc>=1.0.0; platform_system == "Linux"
+Dynamic: home-page
+Dynamic: requires-python
+
+# BiguaSim
+
+![BiguaSim Image](client/docs/images/inspect_plane.jpg)
+
+[![Documentation Status](https://readthedocs.org/projects/biguasim/badge/?version=latest)](https://biguasim.readthedocs.io/en/latest/?badge=latest)
+ [![Build Status](https://robots.et.byu.edu:4000/api/badges/frostlab/biguasim/status.svg?ref=refs/heads/develop)](https://robots.et.byu.edu:4000/frostlab/biguasim)
+
+
+BiguaSim is a high-fidelity simulator for underwater robotics built on top of Unreal Engine 4, and forked from Holodeck by BYU's PCCL Lab.
+
+If you use BiguaSim for your research, please cite our ICRA publication;
+
+```
+@inproceedings{Potokar22icra,
+  author = {E. Potokar and S. Ashford and M. Kaess and J. Mangelson},
+  title = {Holo{O}cean: An Underwater Robotics Simulator},
+  booktitle = {Proc. IEEE Intl. Conf. on Robotics and Automation, ICRA},
+  address = {Philadelphia, PA, USA},
+  month = may,
+  year = {2022}
+}
+```
+
+## Features
+ - 3+ rich worlds with various infrastructure for generating data or testing underwater algorithms
+ - Complete with common underwater sensors including DVL, IMU, optical camera, various sonar, depth sensor, and more
+ - Highly and easily configurable sensors and missions
+ - Multi-agent missions, including optical and acoustic communications
+ - Novel sonar simulation framework for simulating imaging, profiling, sidescan, and echosounder sonars
+ - Imaging sonar implementation includes realistic noise modeling for small sim-2-real gap
+ - Easy installation and simple, OpenAI Gym-like Python interface
+ - High performance - simulation speeds of up to 2x real time are possible. Performance penalty only for what you need
+ - Run headless or watch your agents learn
+ - Linux and Windows support
+
+## Installation
+`pip install biguasim`
+
+(requires >= Python 3.6)
+
+See [Installation](https://biguasim.readthedocs.io/en/latest/usage/installation.html) for complete instructions.
+
+- Docker usage:
+`docker run -it \
+  --name biguasim \
+  --privileged \
+  --ipc=host \
+  --gpus all \
+  --runtime=nvidia \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v $HOME/path/to/biguasim/content:/home/biguasim/workspace \
+  -e DISPLAY=$DISPLAY \
+  -e NVIDIA_VISIBLE_DEVICES=all \
+  -e NVIDIA_DRIVER_CAPABILITIES=compute,graphics,utility \
+  -e QT_X11_NO_MITSHM=1 \
+  mgmateus/hydrone:biguasim-base`
+
+  To use your local worlds add to docker command: 
+  
+  `-v $HOME/path/to/your/worlds:/home/biguasim/.local/share/biguasim/1.0.0/worlds \`
+  
+  `su biguasim`
+  - password sudo : `biguasim`
+    
+  `cd workspace/biguasim`
+  
+  `sudo pip install .`
+
+## Documentation
+* [Quickstart](https://biguasim.readthedocs.io/en/latest/usage/getting-started.html)
+* [Changelog](https://biguasim.readthedocs.io/en/latest/changelog/changelog.html)
+* [Examples](https://biguasim.readthedocs.io/en/latest/usage/getting-started.html#code-examples)
+* [Agents](https://biguasim.readthedocs.io/en/latest/agents/agents.html)
+* [Sensors](https://biguasim.readthedocs.io/en/latest/biguasim/sensors.html)
+* [Available Packages and Worlds](https://biguasim.readthedocs.io/en/latest/packages/packages.html)
+* [Docs](https://biguasim.readthedocs.io/en/latest/)
+
+## Usage Overview
+BiguaSim's interface is similar to [OpenAI's Gym](https://gym.openai.com/). 
+
+We try and provide a batteries included approach to let you jump right into using BiguaSim, with minimal
+fiddling required.
+
+To demonstrate, here is a quick example using the `DefaultWorlds` package:
+
+```python
+import biguasim
+
+# Load the environment. This environment contains a hovering AUV in a pier
+env = biguasim.make("PierHarbor-Hovering")
+
+# You must call `.reset()` on a newly created environment before ticking/stepping it
+env.reset()                         
+
+# The AUV takes commands for each thruster
+command = [0, 0, 0, 0, 10, 10, 10, 10]   
+
+for i in range(30):
+    state = env.step(command)  
+```
+
+- `state`: dict of sensor name to the sensor's value (nparray).
+
+If you want to access the data of a specific sensor, import sensors and
+retrieving the correct value from the state dictionary:
+
+```python
+print(state["DVLSensor"])
+```
+
+## Multi Agent-Environments
+BiguaSim supports multi-agent environments.
+
+Calls to [`step`](https://biguasim.readthedocs.io/en/latest/biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.step) only provide an action for the main agent, and then tick the simulation. 
+
+[`act`](https://biguasim.readthedocs.io/en/latest/biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.act) provides a persistent action for a specific agent, and does not tick the simulation. After an 
+action has been provided, [`tick`](https://biguasim.readthedocs.io/en/latest/biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.tick) will advance the simulation forward. The action is persisted until another call to `act` provides a different action.
+
+```python
+import biguasim
+import numpy as np
+
+env = biguasim.make("Dam-Hovering")
+env.reset()
+
+# Provide an action for each agent
+env.act('auv0', np.array([0, 0, 0, 0, 10, 10, 10, 10]))
+
+# Advance the simulation
+for i in range(300):
+  # The action provided above is repeated
+  states = env.tick()
+```
+
+You can access the sensor states as before:
+
+```python
+dvl = states["auv0"]["DVLSensor"]
+location = states["auv0"]["DepthSensor"]
+```
+
+(`auv0` comes from the [scenario configuration file](https://biguasim.readthedocs.io/en/latest/packages/docs/scenarios.html))
+
+## Running BiguaSim Headless
+BiguaSim can run headless with GPU accelerated rendering. See [Using BiguaSim Headless](https://biguasim.readthedocs.io/en/latest/usage/running-headless.html)
+

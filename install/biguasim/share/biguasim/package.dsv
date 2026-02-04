@@ -1,0 +1,3 @@
+source;share/biguasim/hook/pythonpath.ps1
+source;share/biguasim/hook/pythonpath.dsv
+source;share/biguasim/hook/pythonpath.sh

@@ -1,0 +1,5 @@
+numpy<=1.26.4
+scipy
+
+[:platform_system == "Linux"]
+posix_ipc>=1.0.0
