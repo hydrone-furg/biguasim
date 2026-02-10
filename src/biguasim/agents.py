@@ -2,76 +2,13 @@
 from functools import reduce
 
 import numpy as np
-from . import joint_constraints
 
-from biguasim.spaces import ContinuousActionSpace, DiscreteActionSpace
+from biguasim.spaces import ContinuousActionSpace
 from biguasim.sensors import SensorDefinition, SensorFactory, RGBCamera
 from biguasim.command import AddSensorCommand, RemoveSensorCommand
 
 
-class ControlSchemes:
-    """All allowed control schemes.
 
-    Attributes:
-        ANDROID_TORQUES (int): Default Android control scheme. Specify a torque for each joint.
-        CONTINUOUS_SPHERE_DEFAULT (int): Default ContinuousSphere control scheme.
-            Takes two commands, [forward_delta, turn_delta].
-        DISCRETE_SPHERE_DEFAULT (int): Default DiscreteSphere control scheme. Takes a value, 0-4,
-            which corresponds with forward, backward, right, and left.
-        NAV_TARGET_LOCATION (int): Default NavAgent control scheme. Takes a target xyz coordinate.
-        UAV_TORQUES (int): Default UAV control scheme. Takes torques for roll, pitch, and yaw, as
-            well as thrust.
-        UAV_ROLL_PITCH_YAW_RATE_ALT (int): Control scheme for UAV. Takes roll, pitch, yaw rate, and
-            altitude targets.
-        HAND_AGENT_MAX_TORQUES (int): Default Android control scheme. Specify a torque for each joint.
-        AUV_THRUSTERS (int): Default HoveringAUV control scheme. Specify 8-vector of forces for each thruster.
-        AUV_CONTROL (int): Implemented PD controller. Specify 6-vector of position and roll,pitch,yaw to go too.
-        AUV_FORCES (int): Used for custom dynamics. All internal dynamics (except collisions) are turned off including
-            buoyancy, gravity, and damping. Specify 6-vector of linear and angular acceleration in the global frame.
-        TAUV_FINS (int): Default TorpedoAUV control scheme. Specify 5-vector of fin rotations in degrees and propeller value in Newtons.
-        TAUV_FORCES (int): Used for custom dynamics. All internal dynamics (except collisions) are turned off including
-            buoyancy, gravity, and damping. Specify 6-vector of linear and angular acceleration in the global frame.
-        SV_THRUSTERS (int): Default SurfaceVessel control scheme. Specify 2-vector of forces for left and right thruster.
-        SV_CONTROL (int): Implemented PD controller. Specify 2-vector of x and y position to go too.
-        SV_FORCES (int): Used for custom dynamics. All internal dynamics (except collisions) are turned off including
-            buoyancy, gravity, and damping. Specify 6-vector of linear and angular acceleration in the global frame.
-    """
-    # Android Control Schemes
-    ANDROID_DIRECT_TORQUES = 0
-    ANDROID_MAX_SCALED_TORQUES = 1
-
-    # Sphere Agent Control Schemes
-    SPHERE_DISCRETE = 0
-    SPHERE_CONTINUOUS = 1
-
-    # Nav Agent Control Schemes
-    NAV_TARGET_LOCATION = 0
-
-    # Turtle agent
-    TURTLE_DIRECT_TORQUES = 0
-
-    # UAV Control Schemes
-    UAV_TORQUES = 0
-    UAV_ROLL_PITCH_YAW_RATE_ALT = 1
-
-    # HandAgent Control Schemes
-    HAND_AGENT_MAX_TORQUES = 0
-    HAND_AGENT_MAX_SCALED_TORQUES = 1
-    HAND_AGENT_MAX_TORQUES_FLOAT = 2
-
-    # Hovering AUV Control Schemes
-    AUV_THRUSTERS = 0
-    AUV_CONTROL = 1
-    AUV_FORCES = 2
-
-    # Torpedo AUV Control Schemes
-    TAUV_FINS = 0
-    TAUV_FORCES = 1
-
-    # Surface Vessel Control Schemes
-    SV_THRUSTERS = 0
-    SV_CONTROL = 1
-    SV_FORCES = 2
 
 class BiguaSimAgent:
     """A learning agent in BiguaSim
@@ -133,11 +70,10 @@ class BiguaSimAgent:
         np.copyto(self._action_buffer, np.zeros(self._action_buffer.shape))
 
     def set_control_scheme(self, index):
-        """Sets the control scheme for the agent. See :class:`ControlSchemes`.
+        """Sets the control scheme for the agent.
 
         Args:
             index (:obj:`int`): The control scheme to use. Should be set with an enum from
-                :class:`ControlSchemes`.
         """
         # self._current_control_abstraction = index % self._num_control_abstractions
         # self._control_scheme_buffer[0] = self._current_control_abstraction

@@ -126,13 +126,30 @@ class BiguaSimClient:
 
         return self._memory[key].np_array
     
+    # def free(self, key):
+    #     mm = self._memory[key]._mem_pointer
+    #     # print(b"\x00" * self._memory[key]._mem_pointer.size())
+    #     mm.seek(24)  # Move to position 24
+    #     remaining_size = mm.size() - 24
+    #     mm.write(b'\x00' * remaining_size)  # Clear only the remaining part
+    #     mm.flush()
+    #     # print()
+
     def free(self, key):
-        mm = self._memory[key]._mem_pointer
-        # print(b"\x00" * self._memory[key]._mem_pointer.size())
-        mm.seek(24)  # Move to position 24
-        remaining_size = mm.size() - 24
-        mm.write(b'\x00' * remaining_size)  # Clear only the remaining part
-        mm.flush()
-        # print()
+        mem = self._memory.get(key)
+        if mem is None:
+            return
+
+        mm = mem._mem_pointer
+
+        try:
+            size = mm.size()
+        except (ValueError, OSError):
+            return  # already closed
+
+        if size < 24:
+            return  # nothing to clean safely
+
+        mm.seek(24)
 
 

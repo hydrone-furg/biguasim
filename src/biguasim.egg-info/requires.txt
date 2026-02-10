@@ -1,5 +1,6 @@
-numpy<=1.26.4
-scipy
+numpy>=1.26.4
+typing-extensions>=4.12
+pytest==8.3.5
 
 [:platform_system == "Linux"]
 posix_ipc>=1.0.0

@@ -216,7 +216,6 @@ class Catamaran(VehicleModel):
         s_dot[:, 3:6] = v_dot 
         s_dot[:, 6:10] = q_dot  
         s_dot[:, 10:13] = w_dot.squeeze(-1)
-        
         return s_dot
         
     
@@ -323,7 +322,6 @@ class Catamaran(VehicleModel):
             w = state['w'][self.idxs]          # angular velocity (B,3)
             q = state['q'][self.idxs]          # quaternion orientation (B,4)
 
-            print('POS', x[0])
             # --- Control input ---
             goal = control['cmd_ctrl'][self.idxs]  # [vx, vy, vz, yaw_delta_deg]
 
@@ -336,10 +334,6 @@ class Catamaran(VehicleModel):
             v_des = self.batched_params.kp_pos[self.idxs] * pos_err  # proportional position control
             v_des[:, 0] = torch.clamp(v_des[:,0], -2.5, 3) # Max body velocity 
 
-            print('v_des', v_des[0])
-
-
-            
             # --- Velocity control (P controller on velocity error)  ---
             v_err = v_des - v 
             a_des = self.batched_params.k_vx[self.idxs] * v_err  # desired acceleration
@@ -375,7 +369,6 @@ class Catamaran(VehicleModel):
 
             # Safety: remove NaNs / infs
             cmd_motor_speeds = torch.nan_to_num(cmd_motor_speeds, nan=0.0, posinf=0.0, neginf=0.0)
-
             return cmd_motor_speeds
         
 

@@ -241,6 +241,7 @@ class HexaCopterFiveDoF(VehicleModel):
 
             # --- Control input ---
             goal = control['cmd_ctrl'][self.idxs]  # [vx, vy, vz]
+            print('----', goal)
 
             # --- Velocity control (P controller on velocity error) ---
             v_err = goal[self.idxs] - v
@@ -477,6 +478,7 @@ class OctaCopterSixDoF(HexaCopterFiveDoF):
 
             # --- Control input ---
             goal = control['cmd_ctrl'][self.idxs]  # [vx, vy, vz]
+            print('----', goal)
 
             # --- Velocity control (P controller on velocity error) ---
             v_err = goal[self.idxs] - v
@@ -492,9 +494,9 @@ class OctaCopterSixDoF(HexaCopterFiveDoF):
             M_roll = self.pid_roll.compute(w[:, 0], self.dt, self.idxs)
             M_pitch = self.pid_pitch.compute(w[:, 1], self.dt, self.idxs)    
 
+
             # --- Yaw stabilization ---
-            yaw = roma.unitquat_to_euler('xyz', q)[:, 2]  # current yaw (ψ)
-            yaw_delta = torch.deg2rad(goal[:, 3].double())
+            yaw = roma.unitquat_to_rotvec(q)[:, 2]  # current yaw (ψ)
             yaw_des = (yaw + np.pi) % (2 * np.pi) - np.pi
             yaw_err = (yaw_des - yaw + np.pi) % (2 * np.pi) - np.pi
             

@@ -1,17 +1,18 @@
 Metadata-Version: 2.4
 Name: biguasim
 Version: 1.0.0
-Summary: Autonomous Underwater Vehicle Simulator
+Summary: Hybrid aerial-water Vehicle Simulator
 Home-page: https://bitbucket.org/frostlab/biguasim
-Author: Easton Potokar, Spencer Ashford
-Author-email: BYU FRoSt & PCCL Labs <contagon@byu.edu>
+Author: Matheus G. Mateus, Henrique Reichow
+Author-email: NAUTEC <nateucgestao@gmail.com>
 License: MIT License
 Project-URL: Homepage, https://bitbucket.org/frostlab/biguasim
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
-Requires-Dist: numpy<=1.26.4
-Requires-Dist: scipy
 Requires-Dist: posix_ipc>=1.0.0; platform_system == "Linux"
+Requires-Dist: numpy>=1.26.4
+Requires-Dist: typing-extensions>=4.12
+Requires-Dist: pytest==8.3.5
 Dynamic: home-page
 Dynamic: requires-python
 

@@ -617,13 +617,9 @@ class BiguaSimEnvironment:
                         action = dynamics_model.step(state[agent_name], [cmds], dt)
                         #Processar estado no single
 
-                
                 for i in range(dynamics_model.batch_size):
                     self.agents[f"{agent_name}-id{i}"].act(action[i])
-
-            # action = [[1,0,0,0,0,0]] * len(cmds)
-            # for i in range(len(cmds)):
-            #     self.agents[f"uav0-id{i}"].act(action[i])
+                    
 
 
         return state
