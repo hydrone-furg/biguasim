@@ -1072,11 +1072,13 @@ class BiguaSimEnvironment:
             # rebuild state dictionary to drop/change data as needed
             if self._copy_state:
                 st = dict()
-                for sensor_name, sensor in self.agents[
-                    self._agent.name
-                ].sensors.items():
+                for sensor_name, sensor in self.agents[self._agent.name].sensors.items():
                     data = sensor.sensor_data
-                    if isinstance(data, np.ndarray):
+                    # Se for um dicionário (nosso ImagingSonar novo), passa direto
+                    if isinstance(data, dict):
+                        st[sensor_name] = data
+                    # Se for o array padrão, faz a cópia como antes
+                    elif isinstance(data, np.ndarray):
                         st[sensor_name] = np.copy(data)
                     elif data is not None:
                         st[sensor_name] = data
@@ -1106,7 +1108,11 @@ class BiguaSimEnvironment:
                 agent_state = dict()
                 for sensor_name, sensor in agent.sensors.items():
                     data = sensor.sensor_data
-                    if isinstance(data, np.ndarray):
+                    
+                    # Prioridade para o formato complexo (Dict)
+                    if isinstance(data, dict):
+                        agent_state[sensor_name] = data
+                    elif isinstance(data, np.ndarray):
                         agent_state[sensor_name] = np.copy(data)
                     elif data is not None:
                         agent_state[sensor_name] = data
