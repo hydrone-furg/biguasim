@@ -216,8 +216,8 @@ can happen automatically, or you can force it to not appear.</p>
 <h3>Headless Mode vs Disabling Viewport Rendering<a class="headerlink" href="#headless-mode-vs-disabling-viewport-rendering" title="Link to this heading"></a></h3>
 <p>These are two different features.</p>
 <p><strong>Disabling Viewport Rendering</strong> is calling the
-(<a class="reference internal" href="../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.should_render_viewport" title="biguasim.environments.BiguaSimEnvironment.should_render_viewport"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_render_viewport()</span></code></a>)
-method on a <a class="reference internal" href="../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment" title="biguasim.environments.BiguaSimEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">BiguaSimEnvironment</span></code></a>. This can be
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">should_render_viewport()</span></code>)
+method on a <code class="xref py py-class docutils literal notranslate"><span class="pre">BiguaSimEnvironment</span></code>. This can be
 done at runtime. It will appear as if the image being rendered in the viewport
 has frozen, but cameras other sensors will still update correctly.</p>
 <p><strong>Headless Mode</strong> is when the viewport window does not appear. If Headless
@@ -231,11 +231,11 @@ automatically.</p>
 <p class="admonition-title">Note</p>
 <p>This will also
 disable viewport rendering
-(<a class="reference internal" href="../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.should_render_viewport" title="biguasim.environments.BiguaSimEnvironment.should_render_viewport"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_render_viewport()</span></code></a>)</p>
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">should_render_viewport()</span></code>)</p>
 <p>If you still want to render the viewport (ie for the
-<a class="reference internal" href="../biguasim/sensors.html#biguasim.sensors.ViewportCapture" title="biguasim.sensors.ViewportCapture"><code class="xref py py-class docutils literal notranslate"><span class="pre">ViewportCapture</span></code></a>) when running headless,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ViewportCapture</span></code>) when running headless,
 simply set
-(<a class="reference internal" href="../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.should_render_viewport" title="biguasim.environments.BiguaSimEnvironment.should_render_viewport"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_render_viewport()</span></code></a>)
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">should_render_viewport()</span></code>)
 to <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </div>
 </section>

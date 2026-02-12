@@ -130,14 +130,14 @@
 <code class="docutils literal notranslate"><span class="pre">AcousticBeaconSensor</span></code> or the <code class="docutils literal notranslate"><span class="pre">OpticalModemSensor</span></code>. Below are some examples of these.</p>
 <section id="sending-acoustic-messages">
 <h2>Sending Acoustic Messages<a class="headerlink" href="#sending-acoustic-messages" title="Link to this heading"></a></h2>
-<p>The command <a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.send_acoustic_message" title="biguasim.environments.BiguaSimEnvironment.send_acoustic_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.send_acoustic_message()</span></code></a> is used to send messages between acoustic beacons.
-There’s a number of message types that can be sent, all with varying functionality, see <a class="reference internal" href="../../biguasim/sensors.html#biguasim.sensors.AcousticBeaconSensor" title="biguasim.sensors.AcousticBeaconSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">biguasim.sensors.AcousticBeaconSensor</span></code></a>
+<p>The command <code class="xref py py-meth docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.send_acoustic_message()</span></code> is used to send messages between acoustic beacons.
+There’s a number of message types that can be sent, all with varying functionality, see <code class="xref py py-class docutils literal notranslate"><span class="pre">biguasim.sensors.AcousticBeaconSensor</span></code>
 for details.</p>
 <p>Further, a few helper functions exist if needed,</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.beacons" title="biguasim.environments.BiguaSimEnvironment.beacons"><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.beacons</span></code></a> returns all beacons.</p></li>
-<li><p><a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.beacons_id" title="biguasim.environments.BiguaSimEnvironment.beacons_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.beacons_id</span></code></a> returns all beacons’ ids.</p></li>
-<li><p><a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.beacons_status" title="biguasim.environments.BiguaSimEnvironment.beacons_status"><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.beacons_status</span></code></a> returns all beacons’ status (whether it’s transmitting or not).</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.beacons</span></code> returns all beacons.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.beacons_id</span></code> returns all beacons’ ids.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.beacons_status</span></code> returns all beacons’ status (whether it’s transmitting or not).</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">biguasim</span>
 
@@ -202,13 +202,13 @@ for details.</p>
 </section>
 <section id="sending-optical-messages">
 <h2>Sending Optical Messages<a class="headerlink" href="#sending-optical-messages" title="Link to this heading"></a></h2>
-<p>The command <a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.send_optical_message" title="biguasim.environments.BiguaSimEnvironment.send_optical_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.send_optical_message()</span></code></a> is used to send messages between optical modems.
-See <a class="reference internal" href="../../biguasim/sensors.html#biguasim.sensors.OpticalModemSensor" title="biguasim.sensors.OpticalModemSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">biguasim.sensors.OpticalModemSensor</span></code></a> for configuration details. Note in order for a message to be transmitted,
+<p>The command <code class="xref py py-meth docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.send_optical_message()</span></code> is used to send messages between optical modems.
+See <code class="xref py py-class docutils literal notranslate"><span class="pre">biguasim.sensors.OpticalModemSensor</span></code> for configuration details. Note in order for a message to be transmitted,
 the 2 sensors must be aligned.</p>
 <p>Further, a few helper functions exist if needed,</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.modems" title="biguasim.environments.BiguaSimEnvironment.modems"><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.modems</span></code></a> returns all modems.</p></li>
-<li><p><a class="reference internal" href="../../biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.modems_id" title="biguasim.environments.BiguaSimEnvironment.modems_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.modems_id</span></code></a> returns all modems’ ids.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.modems</span></code> returns all modems.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">biguasim.environments.BiguaSimEnvironment.modems_id</span></code> returns all modems’ ids.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">biguasim</span>
 

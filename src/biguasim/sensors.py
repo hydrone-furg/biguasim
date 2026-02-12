@@ -781,6 +781,15 @@ class SidescanSonar(BiguaSimSensor):
     """Simulates a sidescan sonar. See :ref:`configure-octree` for more on
     how to configure the octree that is used.
 
+    **Return Data**
+
+    This sensor returns a **dictionary** containing the following keys (representing a single line of data):
+
+    - ``'noisy'`` (:obj:`np.ndarray`): 1D array of float32. The standard sidescan intensity line with noise applied. Length is equal to ``RangeBins``.
+    - ``'gt_intensity'`` (:obj:`np.ndarray`, optional): 1D array of float32. The "perfect" intensity line derived directly from geometry. Only present if ``SendGTIntensity`` is True.
+    - ``'gt_elevation'`` (:obj:`np.ndarray`, optional): 1D array of float32. The elevation angle of the strongest return for each bin. Only present if ``SendGTElevation`` is True.
+    - ``'pointcloud'`` (:obj:`np.ndarray`, optional): Nx3 array of float32. A list of [X, Y, Z] points relative to the sensor frame. Only present if ``SendGTPointCloud`` is True.
+
     The ``configuration`` block (see :ref:`configuration-block`) accepts any of
     the options in the following sections.
 
@@ -791,6 +800,12 @@ class SidescanSonar(BiguaSimSensor):
     - ``RangeMin``: Minimum range visible in meters, defaults to 0.5.
     - ``RangeMax``: Maximum range visible in meters, defaults to 35.
     - ``RangeBins``/``RangeRes``: Number of range bins of resulting image, or resolution (length in meters) of each bin. Set one or the other. Defaults to 0.05 m.
+
+    **Ground Truth Configuration (New)**
+
+    - ``SendGTIntensity``: Boolean. If True, adds the ``'gt_intensity'`` key to the return dictionary. Defaults to False.
+    - ``SendGTElevation``: Boolean. If True, adds the ``'gt_elevation'`` key to the return dictionary. Defaults to False.
+    - ``SendGTPointCloud``: Boolean. If True, adds the ``'pointcloud'`` key to the return dictionary. **Warning:** This can be computationally expensive. Defaults to False.
 
     **Noise Configuration**
 
@@ -828,12 +843,29 @@ class SidescanSonar(BiguaSimSensor):
                 "Can't set both RangeBins and RangeRes in SidescanSonar, use one of them in your configuration"
             )
         elif "RangeBins" in self.config:
-            range_bins = self.config["RangeBins"]
+            self.range_bins = self.config["RangeBins"]
         elif "RangeRes" in self.config:
-            range_bins = int((range_max - range_min) // self.config["RangeRes"])
+            self.range_bins = int((range_max - range_min) // self.config["RangeRes"])
         else:
-            range_bins = int((range_max - range_min) // range_res)
+            self.range_bins = int((range_max - range_min) // range_res)
+        
+        # 2. Define defaults baseados no mestre
+        send_gt_intensity = self.config.get("SendGTIntensity", False)
+        send_gt_elevation = self.config.get("SendGTElevation", False)
+        send_gt_pointcloud = self.config.get("SendGTPointCloud", False) # Default false no C++
 
+        # 3. Conta canais
+        channels = 1 # Canal 0 (Ruidoso) sempre existe
+        if send_gt_intensity: channels += 1
+        if send_gt_elevation: channels += 1
+        if send_gt_pointcloud: channels += 3
+
+        # Armazena flags para usar no parser
+        self.has_gt_intensity = send_gt_intensity
+        self.has_gt_elevation = send_gt_elevation
+        self.has_gt_pointcloud = send_gt_pointcloud
+
+        # --- VALIDAÇÕES DE CONFIGURAÇÃO ORIGINAIS ---
         if "AzimuthBins" in self.config and "AzimuthRes" in self.config:
             raise ValueError(
                 "Can't set both AzimuthBins and AzimuthRes in SidescanSonar, use one of them in your configuration"
@@ -854,12 +886,53 @@ class SidescanSonar(BiguaSimSensor):
                 "Can't set both MultSigma and MultCov in SidescanSonar, use one of them in your configuration"
             )
 
-        # Ensure shape of python variable matches what will be sent from the c++ side
-        self.shape = [range_bins]
+        self.shape = (channels, self.range_bins)
 
         super(SidescanSonar, self).__init__(
             client, agent_name, agent_type, name=name, config=config
         )
+
+    @property
+    def sensor_data(self):
+        raw_data = self._sensor_data_buffer
+        if raw_data is None: return None
+
+        data = raw_data.flatten()
+        bin_count = self.range_bins
+        
+        output = {}
+        current_offset = 0
+
+        # --- CANAL 0: RUIDOSO (Sempre existe) ---
+        output["noisy"] = data[current_offset : current_offset + bin_count]
+        current_offset += bin_count
+
+        # --- CANAIS OPCIONAIS ---
+        
+        if self.has_gt_intensity:
+            output["gt_intensity"] = data[current_offset : current_offset + bin_count]
+            current_offset += bin_count
+
+        if self.has_gt_elevation:
+            output["gt_elevation"] = data[current_offset : current_offset + bin_count]
+            current_offset += bin_count
+
+        if self.has_gt_pointcloud:
+            # PointCloud são 3 canais seguidos (X, Y, Z)
+            px = data[current_offset : current_offset + bin_count]
+            py = data[current_offset + bin_count : current_offset + 2*bin_count]
+            pz = data[current_offset + 2*bin_count : current_offset + 3*bin_count]
+            
+            # Empilha em (N, 3)
+            pc = np.stack([px, py, pz], axis=1)
+            
+            # Filtra pontos zerados (opcional, mas bom pra viz)
+            # output["pointcloud"] = pc[np.any(pc != 0, axis=1)] 
+            output["pointcloud"] = pc
+            
+            current_offset += 3 * bin_count
+
+        return output
 
     @property
     def dtype(self):
@@ -874,6 +947,15 @@ class ImagingSonar(BiguaSimSensor):
     """Simulates an imaging sonar. See :ref:`configure-octree` for more on
     how to configure the octree that is used.
 
+    **Return Data**
+
+    This sensor returns a **dictionary** with the following keys:
+
+    - ``'noisy'`` (:obj:`np.ndarray`): 2D array (RangeBins x AzimuthBins) of float32. The standard sonar intensity image with noise applied.
+    - ``'gt_intensity'`` (:obj:`np.ndarray`, optional): 2D array of float32. The "perfect" intensity image derived directly from geometry, without noise. Only present if ``SendGTIntensity`` is True.
+    - ``'gt_elevation'`` (:obj:`np.ndarray`, optional): 2D array of float32. The elevation angle of the strongest return for each pixel. Only present if ``SendGTElevation`` is True.
+    - ``'pointcloud'`` (:obj:`np.ndarray`, optional): Nx3 array of float32. A list of [X, Y, Z] points relative to the sensor frame, representing exact hit locations. Only present if ``SendGTPointCloud`` is True.
+
     The ``configuration`` block (see :ref:`configuration-block`) accepts any of
     the options in the following sections.
 
@@ -885,6 +967,12 @@ class ImagingSonar(BiguaSimSensor):
     - ``RangeMax``: Maximum range visible in meters, defaults to 10.
     - ``RangeBins``/``RangeRes``: Number of range bins of resulting image, or resolution (length in meters) of each bin. Set one or the other. Defaults to 512 bins.
     - ``AzimuthBins``/``AzimuthRes``: Number of azimuth bins of resulting image, or resolution (length in degrees) of each bin. Set one or the other. Defaults to 512 bins.
+
+    **Ground Truth Configuration**
+
+    - ``SendGTIntensity``: Boolean. If True, adds the ``'gt_intensity'`` key to the return dictionary. Defaults to False.
+    - ``SendGTElevation``: Boolean. If True, adds the ``'gt_elevation'`` key to the return dictionary. Defaults to False.
+    - ``SendGTPointCloud``: Boolean. If True, adds the ``'pointcloud'`` key to the return dictionary. **Warning:** This can be computationally expensive. Defaults to False.
 
     **Noise Configuration**
 
@@ -1016,18 +1104,28 @@ class ImagingSonar(BiguaSimSensor):
 
 
 class SinglebeamSonar(BiguaSimSensor):
-    """Simulates an echosounder, which is a sonar sensor with a single cone shaped beam. See :ref:`configure-octree` for more on
-    how to configure the octree that is used.
+    """Simulates an echosounder, which is a sonar sensor with a single cone shaped beam. 
+    See :ref:`configure-octree` for more on how to configure the octree that is used.
 
-    Returns a 1D numpy array of the average intensities held in each range bin of the sensor. The length of the array is specified by the number of range bins chosen for the sensor.
+    **Return Data**
+
+    This sensor returns a **dictionary** containing both noisy 
+    simulated data and optional ground truth data. The keys are:
+
+    - ``'noisy'`` (:obj:`np.ndarray`): 1D array of float32. The standard sonar intensity data 
+      with configured noise applied. Length is equal to ``RangeBins``.
+    - ``'gt_intensity'`` (:obj:`np.ndarray`, optional): 1D array of float32. The "perfect" intensity 
+      data derived directly from physics/geometry without stochastic noise. Only present if 
+      ``SendGTIntensity`` is True.
+    - ``'gt_elevation'`` (:obj:`np.ndarray`, optional): 1D array of float32. The elevation/opening 
+      angle of the strongest return in that bin. Only present if ``SendGTElevation`` is True.
+    - ``'pointcloud'`` (:obj:`np.ndarray`, optional): Nx3 array of float32. A raw list of [X, Y, Z] 
+      points relative to the sensor frame, representing exact hit locations on the octree. 
+      Only present if ``SendGTPointCloud`` is True.
 
     **Configuration**
 
-    The ``configuration`` block (see :ref:`configuration-block`) accepts the following
-    options:
-
-    The ``configuration`` block (see :ref:`configuration-block`) accepts any of
-    the options in the following sections.
+    The ``configuration`` block (see :ref:`configuration-block`) accepts the following options:
 
     **Basic Configuration**
 
@@ -1036,11 +1134,19 @@ class SinglebeamSonar(BiguaSimSensor):
     - ``RangeMax``: Maximum range visible in meters, defaults to 10.
     - ``RangeBins``/``RangeRes``: Number of range bins of resulting image, or resolution (length in meters) of each bin. Set one or the other. Defaults to 200 bins.
 
+    **Ground Truth Configuration**
+
+    - ``SendGTIntensity``: Boolean. If True, adds the ``'gt_intensity'`` key to the return dictionary. Useful for training denoising algorithms. Defaults to False.
+    - ``SendGTElevation``: Boolean. If True, adds the ``'gt_elevation'`` key to the return dictionary. Defaults to False.
+    - ``SendGTPointCloud``: Boolean. If True, adds the ``'pointcloud'`` key to the return dictionary. **Warning:** This can be computationally expensive and generate large amounts of data. Defaults to False.
+
     **Noise Configuration**
+
+    These parameters affect only the ``'noisy'`` output channel:
 
     - ``AddSigma``/``AddCov``: Additive noise std/covariance from a Rayleigh distribution. Needs to be a float. Set one or the other. Defaults to 0, or off.
     - ``MultSigma``/``MultCov``: Multiplication noise std/covariance from a normal distribution. Needs to be a float. Set one or the other. Defaults to 0, or off.
-    - ``RangeSigma``: Additive noise std from an exponential distribution that will be added to the range measurements. Needs to be a float. Defaults to 0/off.
+    - ``RangeSigma``: Additive noise std from an exponential distribution that will be added to the range measurements (jitter). Needs to be a float. Defaults to 0/off.
 
     **Advanced Configuration**
 
@@ -1063,25 +1169,41 @@ class SinglebeamSonar(BiguaSimSensor):
     ):
         self.config = {} if config is None else config
 
-        # default range for bins
-        b_range = 200
-
-        if "BinsRange" in self.config:
-            b_range = self.config["BinsRange"]
-
-        b_range = 200
-        min_range = self.config.get("RangeMin", 0.5)
-        max_range = self.config.get("RangeMax", 10)
-
+        # --- CÁLCULO DOS BINS (RangeBins) ---
+        range_min = self.config.get("RangeMin", 0.5)
+        range_max = self.config.get("RangeMax", 10)
+        
+        # Limpeza da lógica original que estava meio redundante
         if "RangeBins" in self.config and "RangeRes" in self.config:
             raise ValueError(
                 "Can't set both RangeBins and RangeRes in SinglebeamSonar, use one of them in your configuration"
             )
         elif "RangeBins" in self.config:
-            b_range = self.config["RangeBins"]
+            self.range_bins = self.config["RangeBins"]
         elif "RangeRes" in self.config:
-            b_range = int((max_range - min_range) // self.config["RangeRes"])
+            self.range_bins = int((range_max - range_min) // self.config["RangeRes"])
+        else:
+            # Default fallback
+            self.range_bins = 200
 
+        # --- LOGICA DE CANAIS (Igual ao SideScan) ---
+        # Lê direto as flags específicas. Se não tiver no JSON, assume False.
+        send_gt_intensity = self.config.get("SendGTIntensity", False)
+        send_gt_elevation = self.config.get("SendGTElevation", False)
+        send_gt_pointcloud = self.config.get("SendGTPointCloud", False)
+
+        # Conta canais para alocar memória
+        channels = 1 # Canal 0 (Ruidoso) sempre existe
+        if send_gt_intensity: channels += 1
+        if send_gt_elevation: channels += 1
+        if send_gt_pointcloud: channels += 3
+
+        # Armazena flags na instância para usar no parser (sensor_data)
+        self.has_gt_intensity = send_gt_intensity
+        self.has_gt_elevation = send_gt_elevation
+        self.has_gt_pointcloud = send_gt_pointcloud
+
+        # --- VALIDAÇÕES DE CONFIGURAÇÃO ORIGINAIS ---
         if "OpeningAngleBins" in self.config and "OpeningAngleRes" in self.config:
             raise ValueError(
                 "Can't set both OpeningAngleBins and OpeningAngleRes in SinglebeamSonar, use one of them in your configuration"
@@ -1102,11 +1224,50 @@ class SinglebeamSonar(BiguaSimSensor):
                 "Can't set both MultSigma and MultCov in SinglebeamSonar, use one of them in your configuration"
             )
 
-        self.shape = [b_range]
+        # Ensure shape of python variable matches what will be sent from the c++ side
+        self.shape = (channels, self.range_bins)
 
         super(SinglebeamSonar, self).__init__(
             client, agent_name, agent_type, name=name, config=config
         )
+
+    @property
+    def sensor_data(self):
+        raw_data = self._sensor_data_buffer
+        if raw_data is None: return None
+
+        # Garante que está flat para fatiar sequencialmente
+        data = raw_data.flatten()
+        bin_count = self.range_bins
+        
+        output = {}
+        current_offset = 0
+
+        # --- CANAL 0: RUIDOSO (Sempre existe) ---
+        output["noisy"] = data[current_offset : current_offset + bin_count]
+        current_offset += bin_count
+
+        # --- CANAIS OPCIONAIS ---
+        if self.has_gt_intensity:
+            output["gt_intensity"] = data[current_offset : current_offset + bin_count]
+            current_offset += bin_count
+
+        if self.has_gt_elevation:
+            output["gt_elevation"] = data[current_offset : current_offset + bin_count]
+            current_offset += bin_count
+
+        if self.has_gt_pointcloud:
+            # PointCloud são 3 canais seguidos (X, Y, Z)
+            px = data[current_offset : current_offset + bin_count]
+            py = data[current_offset + bin_count : current_offset + 2*bin_count]
+            pz = data[current_offset + 2*bin_count : current_offset + 3*bin_count]
+            
+            # Empilha em (N, 3)
+            pc = np.stack([px, py, pz], axis=1)
+            output["pointcloud"] = pc
+            current_offset += 3 * bin_count
+
+        return output
 
     @property
     def dtype(self):
@@ -1274,10 +1435,27 @@ class DepthSensor(BiguaSimSensor):
         return [1]
 
 class DepthCamera(BiguaSimSensor):
-    """
-    Captures high-precision depth data (Float32) directly from the GPU.
-    Follows the AirSim architecture:
-    - Channel 0 (Red): Linear Depth in Centimeters.
+    """Captures high-precision linear depth data (Float32) directly from the GPU.
+
+    **Return Data**
+
+    This sensor returns a **dictionary** with the following keys:
+
+    - ``'depth_map'`` (:obj:`np.ndarray`): 2D array (Height x Width) of float32. Represents the linear distance from the camera plane in **Meters**.
+    - ``'raw_value'`` (:obj:`np.ndarray`): 2D array of float32. The raw value extracted directly from the GPU buffer (Channel 0/Red), useful for debugging shader output.
+
+    **Configuration**
+
+    The ``configuration`` block (see :ref:`configuration-block`) accepts the following options:
+
+    - ``CaptureWidth`` (int): Width of the depth map. Defaults to 256.
+    - ``CaptureHeight`` (int): Height of the depth map. Defaults to 256.
+
+    **Technical Notes**
+    
+    - The data type is **np.float32**. Do not attempt to visualize this directly with functions like ``cv2.imshow`` without normalizing to a 0-1 range first, as the values represent physical distances (e.g., 50.0 meters).
+    - The sensor reads from the Red channel (Index 0) of the texture buffer.
+
     """
 
     sensor_type = "DepthCamera"

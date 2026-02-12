@@ -129,7 +129,7 @@
              
   <section id="pose-sensor">
 <span id="id1"></span><h1>Pose Sensor<a class="headerlink" href="#pose-sensor" title="Link to this heading"></a></h1>
-<p>Returns the orientation (see <a class="reference internal" href="../../biguasim/sensors.html#biguasim.sensors.OrientationSensor" title="biguasim.sensors.OrientationSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrientationSensor</span></code></a>) and position of the
+<p>Returns the orientation (see <code class="xref py py-class docutils literal notranslate"><span class="pre">OrientationSensor</span></code>) and position of the
 <strong>sensor</strong> in a 4x4 homogenous matrix in the <strong>global frame</strong>. If the sensor is placed in a socket
 other than the COM socket, it will return the global pose of the socket it is placed in (the
 location of the vehicle plus the offset from vehicle COM to socket).</p>
@@ -139,7 +139,7 @@ location of the vehicle plus the offset from vehicle COM to socket).</p>
 </pre></div>
 </div>
 <p>Where R is a 3x3 rotation matrix and p is a 3x1 position vector. The last row is always [0, 0, 0, 1].</p>
-<p>See <a class="reference internal" href="../../biguasim/sensors.html#biguasim.sensors.PoseSensor" title="biguasim.sensors.PoseSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoseSensor</span></code></a> for the Python API and more details.</p>
+<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">PoseSensor</span></code> for the Python API and more details.</p>
 <p>Example sensor definition:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;sensor_type&quot;</span><span class="p">:</span> <span class="s2">&quot;PoseSensor&quot;</span><span class="p">,</span>
