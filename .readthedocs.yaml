@@ -11,4 +11,4 @@ python:
       path: .  # Isso instala o seu código para o Sphinx ler os sensores
 
 sphinx:
-  configuration: docs/source/conf.py
+  configuration: biguasim_docs/conf.py
