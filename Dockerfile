@@ -1,29 +1,49 @@
-FROM ghcr.io/epicgames/unreal-engine:runtime
+FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04
 
-USER root
 ENV DEBIAN_FRONTEND=noninteractive
-# RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl git libglib2.0-dev software-properties-common
 
-# OpenCV's runtime dependencies (and other dependencies)
-RUN apt-get install -y libglib2.0-0 libsm6 libxrender-dev libxext6
+ARG UID=1001
+ARG GID=1001
 
-# Install all python versions to test on
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get update && apt-get install -y python3-dev python3-pip \
-    python3.7-dev python3.7-distutils \
-    python3.8-dev python3.8-distutils \
-    python3.9-dev python3.9-distutils \
-    python3.10-dev python3.10-distutils \
-    python3.11-dev python3.11-distutils
+# Install system deps + create user
+RUN apt-get update && apt-get install -y \
+    sudo \
+    python3 \
+    python3-pip \
+    python3-venv \
+    libx11-6 \
+    libxext-dev \
+    libxrender-dev \
+    libxinerama-dev \
+    libxi-dev \
+    libxrandr-dev \
+    libxcursor-dev \
+    libxss1 \
+    x11-apps \
+    libsdl2-2.0-0 \
+    libvulkan1 \
+    vulkan-tools \
+    libgl1 \
+    libglu1-mesa \
+    libegl1 \
+    libfontconfig1 \
+    libfreetype6 \
+    && rm -rf /var/lib/apt/lists/* && \
+    groupadd -g $GID user && \
+    useradd -m -u $UID -g $GID -s /bin/bash user && \
+    usermod -aG sudo user && \
+    echo "user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/user
 
-RUN pip3 install setuptools wheel tox posix_ipc numpy
+USER user
 
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-RUN apt-get install git-lfs
+WORKDIR /home/user/biguasim
+COPY --chown=user:user . .
 
-# Setup user
-USER ue4
+RUN pip install . --break-system-packages --retries 10 --timeout 10000
 
-CMD /bin/bash
+RUN python3 -c "import biguasim; biguasim.install('SkyDive')" || echo "WARNING: The BiguaSim packaged worlds server is offline! Please try again later, or use your own."
+
+WORKDIR /home/user
+
+CMD ["bash"]
+

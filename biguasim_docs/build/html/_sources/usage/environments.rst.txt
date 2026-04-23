@@ -18,7 +18,7 @@ scenarios, the name of the scenario is passed as a string:
 
 .. code-block:: python
 
-    env = biguasim.make("Pier-Harbor")
+    env = biguasim.make("PierHarbor-Hovering")
 
 If using a custom scenario without a ``.json`` file, the scenario object is passed directly:
 

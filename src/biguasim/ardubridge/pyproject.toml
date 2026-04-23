@@ -1,0 +1,20 @@
+[project]
+name = "ardupilot-biguasim"
+version = "0.1.0"
+description = "ArduPilot JSON SITL bridge for BiguaSim — supports BlueROV2, BlueROVHeavy, BlueBoat, DjiMatrice, TorpedoAUV"
+readme = "README.md"
+authors = [
+    { name = "alikolling", email = "alikolling@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "scipy>=1.9",
+    "numpy",
+]
+
+[project.scripts]
+ardupilot-biguasim = "ardupilot_biguasim:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

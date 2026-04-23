@@ -1187,7 +1187,7 @@ class TorpedoAUV(VehicleModel):
                 self.u_actual = torch.zeros(self.batch_size, 5, device=self.device).double()
 
         if self.control_abstraction == 'cmd_rudders_sterns_motor_speed':
-            return control['cmd_ctrl'][:, 5]
+            return control['cmd_ctrl'][self.idxs]
         
         if self.control_abstraction == 'cmd_depth_heading_rpm_surge':
             """

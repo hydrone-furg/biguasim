@@ -21,8 +21,8 @@ sys.path.insert(0, os.path.abspath('../src'))
 # -- Project information -----------------------------------------------------
 
 project = 'BiguaSim'
-copyright = 'Nautec FURG'
-author = 'Mateus, Matheus G. and De Oliveira, Guilherme C. and Reichow, Luis Henrique K. and Kolling, Alisson H. and Pinheiro, Pedro M. and Drews-Jr, Paulo L. J.'
+copyright = 'FURG'
+author = 'Easton Potokar, Spencer Ashford, Joshua Mangelson'
 
 # The short X.Y version
 version = "1.0.0"
@@ -48,7 +48,6 @@ extensions = [
     'sphinx.ext.napoleon',
     "sphinx_copybutton",
     'autodocsumm',
-    'sphinx.ext.mathjax',
 ]
 
 autodoc_default_options = {

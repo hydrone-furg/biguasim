@@ -21,7 +21,8 @@ from biguasim import __version__
 from biguasim.exceptions import BiguaSimException, NotFoundException
 
 
-BACKEND_URL = "https://robots.et.byu.edu/holo/"
+# BACKEND_URL = "https://robots.et.byu.edu/holo/"
+BACKEND_URL = "http://192.168.2.110:8000/"
 
 def _get_from_backend(rel_url):
     """
@@ -54,7 +55,8 @@ def available_packages():
             url, err.reason),
               file=sys.stderr)
         raise
-
+    
+    
     return index["packages"]
 
 
@@ -215,7 +217,7 @@ def install(package_name, url=None, branch=None, commit=None):
         package_name (:obj:`str`): The name of the package to install
     """
 
-    print("The world that you are downloading contains Unreal Engine code and likely content.")
+    print("The world that you are downloading doesn't contains Unreal Engine code and likely content.")
     print("Download and/or use of this world signifies agreement that you have already accepted and agree\nto be bound by the Unreal Engine EULA found at https://www.unrealengine.com/en-US/eula/unreal.")
 
     # input("Press Enter to continue: ")
@@ -234,7 +236,7 @@ def install(package_name, url=None, branch=None, commit=None):
         return
 
     _check_for_old_versions()
-    holodeck_path = util.get_biguasim_path()
+    biguasim_path = util.get_biguasim_path()
 
     if url is None:
         # If the URL is none, we need to derive it
@@ -252,7 +254,7 @@ def install(package_name, url=None, branch=None, commit=None):
                 commit = "latest"
 
         else:
-            branch = "v{holodeck_version}".format(holodeck_version=util.get_biguasim_version())
+            branch = "v{biguasim_version}".format(biguasim_version=util.get_biguasim_version())
             commit = util.get_os_key()
 
         # example: %backend%/Ocean/v0.1.0/Linux.zip
@@ -262,7 +264,7 @@ def install(package_name, url=None, branch=None, commit=None):
                     package_name=package_name,
                     platform=commit)
 
-    install_path = os.path.join(holodeck_path, "worlds", package_name)
+    install_path = os.path.join(biguasim_path, "worlds", package_name)
 
     print("Installing {} from {} to {}".format(package_name, url, install_path))
 

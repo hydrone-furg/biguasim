@@ -18,12 +18,6 @@ def parse_state(state):
     state.pop('t')
     return list(map(itemgetter('DynamicsSensor'), itemgetter(*state.keys())(state)))
 
-# def extract_dynamics(sensor_list):
-#     return [
-#         ds.tolist()
-#         for entry in sensor_list
-#         if (ds := entry.get("DynamicsSensor")) is not None
-#     ]
 
 def extract_dynamics(sensor_list):
     out = []
@@ -45,39 +39,6 @@ class VehicleModel(ABC):
        self.idxs = Tensor(range(batch_size)).int()       
        self.dt = 0
        
-
-    # @staticmethod
-    # def map_states(func):                                                                                                           
-    #     def wrapper(self, state : list, control : list, dt : int):        
-    #         self.dt = dt - self.dt
-    #         state = extract_dynamics(state)     
-    #         batch = len(state)                                                                                                      
-    #         ctrl = len(control[0])
-                                                                                                                                    
-    #         s = {                                                                                                                   
-    #             'x': torch.zeros(batch,3, device=self.device).double(),                                                             
-    #             'v': torch.zeros(batch, 3, device=self.device).double(),                                                            
-    #             'q': torch.tensor([0, 0, 0, 1], 
-    #                             device=self.device).repeat(batch, 1).double(),                                      
-    #             'w': torch.zeros(batch, 3, device=self.device).double()                                                             
-    #         }                                                                                                                       
-    #         c = {                                                                                                                   
-    #             'cmd_ctrl' : torch.zeros(batch, ctrl, device=self.device).double()                                                  
-    #         }                                                                                                                       
-    #         for i in range(len(state)):                                                                                     
-                                                                                                                                    
-    #             dynamic = torch.tensor(state[i], device=self.device).double()                                                        
-    #             # dynamic = Transform.convert_NWU_to_NED(dynamic.unsqueeze(0)).squeeze(0)                                             
-                                                                                                                                    
-    #             s['x'][i] = dynamic[6:9].detach().clone()                                                                           
-    #             s['v'][i] = dynamic[3:6].detach().clone()                                                                           
-    #             s['q'][i] = dynamic[15:].detach().clone()                                                                           
-    #             s['w'][i] = dynamic[12:15].detach().clone()                                                                         
-                                                                                                                                    
-    #             c['cmd_ctrl'][i] = torch.tensor(control[i], device=self.device)                                                     
-    #         return func(self, s, c, dt)                                                                                                 
-                                                                                                                                    
-    #     return wrapper  
 
     @staticmethod
     def map_states(func):

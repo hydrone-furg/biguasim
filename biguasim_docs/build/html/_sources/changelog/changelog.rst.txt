@@ -14,6 +14,6 @@ Changelog
 
 BiguaSim 1.0.0
 ===============
-*-/-/2026*
+*-/-/2025*
 
 First official release coming soon!

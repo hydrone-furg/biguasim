@@ -1,28 +1,31 @@
 # BiguaSim
 
-![BiguaSim Image](client/docs/images/inspect_plane.jpg)
+![BiguaSim Image](splash.png)
 
-[![Documentation Status](https://readthedocs.org/projects/biguasim/badge/?version=latest)](https://biguasim.readthedocs.io/en/latest/?badge=latest)
- [![Build Status](https://robots.et.byu.edu:4000/api/badges/frostlab/biguasim/status.svg?ref=refs/heads/develop)](https://robots.et.byu.edu:4000/frostlab/biguasim)
+<!-- [![Documentation Status](https://readthedocs.org/projects/biguasim/badge/?version=latest)](https://biguasim.readthedocs.io/en/latest/?badge=latest)
+ [![Build Status](https://robots.et.byu.edu:4000/api/badges/frostlab/biguasim/status.svg?ref=refs/heads/develop)](https://robots.et.byu.edu:4000/frostlab/biguasim) -->
 
 
-BiguaSim is a high-fidelity simulator for underwater robotics built on top of Unreal Engine 4, and forked from Holodeck by BYU's PCCL Lab.
+BiguaSim is a high-fidelity simulator for underwater robotics built on top of Unreal Engine 5, and forked from Holodeck by BYU's PCCL Lab.
 
-If you use BiguaSim for your research, please cite our ICRA publication;
+If you use BiguaSim for your research, please cite our ICAR publication;
 
 ```
-@inproceedings{Potokar22icra,
-  author = {E. Potokar and S. Ashford and M. Kaess and J. Mangelson},
-  title = {Holo{O}cean: An Underwater Robotics Simulator},
-  booktitle = {Proc. IEEE Intl. Conf. on Robotics and Automation, ICRA},
-  address = {Philadelphia, PA, USA},
-  month = may,
-  year = {2022}
+@inproceedings{mateus2025biguasim,
+  title={BiguaSim: A Hybrid Multi-Domain Simulator for Robotics High-Fidelity Simulation and Synthetic Dataset Generation},
+  author={Mateus, Matheus G and De Oliveira, Guilherme C and Reichow, Luis Henrique K and Kolling, Alisson H and Pinheiro, Pedro M and Drews-Jr, Paulo LJ},
+  booktitle={2025 IEEE International Conference on Advanced Robotics (ICAR)},
+  pages={169--174},
+  year={2025},
+  organization={IEEE}
 }
 ```
 
 ## Features
- - 3+ rich worlds with various infrastructure for generating data or testing underwater algorithms
+ - The vehicles were redesigned with the addition of commercial vehicles.
+ - All the vehicle dynamics originally implemented in the Engine, in a fairly simple way, were transformed into a pseudo-engine in Python considering mathematical models (FossenDynamics and RotorPy), through pytorch to calculate the behavior of the vehicles extremely quickly and then communicate the feedback of the state presented in UE5 with the calculated inputs.
+ - New generations of ground-through data have been created, such as element detection, dynamic semantic segmentation for customized environments, depth maps with real distance values, and representations of sonar data such as point clouds, elevation maps, and intensity maps.
+ - 3 rich worlds with various infrastructure for generating data or testing aerial, surface and underwater algorithms
  - Complete with common underwater sensors including DVL, IMU, optical camera, various sonar, depth sensor, and more
  - Highly and easily configurable sensors and missions
  - Multi-agent missions, including optical and acoustic communications
@@ -34,11 +37,29 @@ If you use BiguaSim for your research, please cite our ICRA publication;
  - Linux and Windows support
 
 ## Installation
-`pip install biguasim`
+`git clone https://github.com/hydrone-furg/biguasim.git`
 
-(requires >= Python 3.6)
+(requires >= Python 3.10)
 
-See [Installation](https://biguasim.readthedocs.io/en/latest/usage/installation.html) for complete instructions.
+#### Conda Environment
+```
+cd biguasim
+
+conda env create -f environment.yml
+
+pip install .
+
+```
+
+#### Local / Different Virtual Environment
+```
+cd biguasim
+
+pip install .
+
+```
+
+<!-- See [Installation](https://biguasim.readthedocs.io/en/latest/usage/installation.html) for complete instructions. -->
 
 - Docker usage:
 `docker run -it \
@@ -67,13 +88,14 @@ See [Installation](https://biguasim.readthedocs.io/en/latest/usage/installation.
   `sudo pip install .`
 
 ## Documentation
-* [Quickstart](https://biguasim.readthedocs.io/en/latest/usage/getting-started.html)
+### Comming soon.
+<!-- * [Quickstart](https://biguasim.readthedocs.io/en/latest/usage/getting-started.html)
 * [Changelog](https://biguasim.readthedocs.io/en/latest/changelog/changelog.html)
 * [Examples](https://biguasim.readthedocs.io/en/latest/usage/getting-started.html#code-examples)
 * [Agents](https://biguasim.readthedocs.io/en/latest/agents/agents.html)
 * [Sensors](https://biguasim.readthedocs.io/en/latest/biguasim/sensors.html)
 * [Available Packages and Worlds](https://biguasim.readthedocs.io/en/latest/packages/packages.html)
-* [Docs](https://biguasim.readthedocs.io/en/latest/)
+* [Docs](https://biguasim.readthedocs.io/en/latest/) -->
 
 ## Usage Overview
 BiguaSim's interface is similar to [OpenAI's Gym](https://gym.openai.com/). 
@@ -86,17 +108,55 @@ To demonstrate, here is a quick example using the `DefaultWorlds` package:
 ```python
 import biguasim
 
-# Load the environment. This environment contains a hovering AUV in a pier
-env = biguasim.make("PierHarbor-Hovering")
+biguasim.install('SkyDive')
 
-# You must call `.reset()` on a newly created environment before ticking/stepping it
-env.reset()                         
+```
 
-# The AUV takes commands for each thruster
-command = [0, 0, 0, 0, 10, 10, 10, 10]   
+```python
+import biguasim
 
-for i in range(30):
-    state = env.step(command)  
+cfg = {
+    "package_name": "SkyDive",               
+    "world": "Relief-Generic-Bridge-Vehicles-Water-Custom",                            
+    "main_agent": "uav0",                               
+    "ticks_per_sec": 20,
+    "frames_per_sec": True,
+    "octree_min": 0.02,
+    "octree_max": 5.0,                              
+    "agents":[                                          
+        {                                               
+            "agent_name": "uav0",                       
+            "agent_type": "DjiMatrice",                
+            "sensors": [
+                    {
+                        "sensor_type": "DynamicsSensor",
+                        "socket": "IMUSocket",
+                        "configuration": {
+                            "UseCOM": True,
+                            "UseRPY": False  
+                        }
+                    }           
+            ],
+            "dynamics" : {
+                "batch_size" : 1,
+            },  
+            "control_abstraction": 'cmd_motor_speeds',
+            "location": [0, 0, 40],
+            "rotation": [0, 0, -90],    
+        }
+    ]
+}
+
+# Load the environment. 
+with biguasim.make(scenario_cfg=cfg) as env:
+
+  # You must call `.reset()` on a newly created environment before ticking/stepping it
+  env.reset()                         
+
+  # The UAV takes commands for each thruster
+  command = [300, 300, 300, 300]   
+  for i in range(30):
+      state = env.step(command)  
 ```
 
 - `state`: dict of sensor name to the sensor's value (nparray).
@@ -104,43 +164,90 @@ for i in range(30):
 If you want to access the data of a specific sensor, import sensors and
 retrieving the correct value from the state dictionary:
 
+##### State format: state[agent_name][batch_position][sensor]
+
 ```python
-print(state["DVLSensor"])
+print(state['uav0'][0]["RangeFinderSensor"])
 ```
 
 ## Multi Agent-Environments
 BiguaSim supports multi-agent environments.
 
-Calls to [`step`](https://biguasim.readthedocs.io/en/latest/biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.step) only provide an action for the main agent, and then tick the simulation. 
-
-[`act`](https://biguasim.readthedocs.io/en/latest/biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.act) provides a persistent action for a specific agent, and does not tick the simulation. After an 
-action has been provided, [`tick`](https://biguasim.readthedocs.io/en/latest/biguasim/environments.html#biguasim.environments.BiguaSimEnvironment.tick) will advance the simulation forward. The action is persisted until another call to `act` provides a different action.
-
 ```python
 import biguasim
-import numpy as np
 
-env = biguasim.make("Dam-Hovering")
-env.reset()
+cfg = {
+    "package_name": "SkyDive",               
+    "world": "Relief-Generic-Bridge-Vehicles-Water-Custom",                            
+    "main_agent": "uav0",                               
+    "ticks_per_sec": 20,
+    "frames_per_sec": True,
+    "octree_min": 0.02,
+    "octree_max": 5.0,                              
+    "agents":[                                          
+        {                                               
+            "agent_name": "uav0",                       
+            "agent_type": "DjiMatrice",                
+            "sensors": [
+                    {
+                        "sensor_type": "DynamicsSensor",
+                        "socket": "IMUSocket",
+                        "configuration": {
+                            "UseCOM": True,
+                            "UseRPY": False  
+                        }
+                    }           
+            ],
+            "dynamics" : {
+                "batch_size" : 1,
+            },  
+            "control_abstraction": 'cmd_motor_speeds',
+            "location": [0, 0, 40],
+            "rotation": [0, 0, -90],    
+        },
+        {                                               
+            "agent_name": "auv0",                       
+            "agent_type": "TorpedoAUV",                
+            "sensors": [
+                    {
+                        "sensor_type": "DynamicsSensor",
+                        "socket": "IMUSocket",
+                        "configuration": {
+                            "UseCOM": True,
+                            "UseRPY": False  
+                        }
+                    }           
+            ],
+            "dynamics" : {
+                "batch_size" : 1,
+            },  
+            "control_abstraction": 'cmd_depth_heading_rpm_surge',
+            "location": [0, 0, -3],
+            "rotation": [0, 0, -90],    
+        }
+    ]
+}
 
-# Provide an action for each agent
-env.act('auv0', np.array([0, 0, 0, 0, 10, 10, 10, 10]))
+with biguasim.make(scenario_cfg=cfg) as env:
+  env.reset()
 
-# Advance the simulation
-for i in range(300):
-  # The action provided above is repeated
-  states = env.tick()
+  command = {
+    'uav0' : [300, 300, 300, 300],
+    'auv0' : [5, 45, 1000, 1]
+  }  
+
+  for i in range(30):
+      state = env.step(command)  
 ```
 
 You can access the sensor states as before:
 
 ```python
-dvl = states["auv0"]["DVLSensor"]
-location = states["auv0"]["DepthSensor"]
+dvl = states["auv0"][0]["DVLSensor"]
+location = states["uav0"][0]["DepthSensor"]
 ```
-
-(`auv0` comes from the [scenario configuration file](https://biguasim.readthedocs.io/en/latest/packages/docs/scenarios.html))
+<!-- 
 
 ## Running BiguaSim Headless
-BiguaSim can run headless with GPU accelerated rendering. See [Using BiguaSim Headless](https://biguasim.readthedocs.io/en/latest/usage/running-headless.html)
+BiguaSim can run headless with GPU accelerated rendering. See [Using BiguaSim Headless](https://biguasim.readthedocs.io/en/latest/usage/running-headless.html) -->
 

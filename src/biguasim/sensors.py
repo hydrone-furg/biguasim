@@ -342,6 +342,77 @@ class RGBCamera(BiguaSimSensor):
         self._client.command_center.enqueue_command(command_to_send)
         self.tick_every = ticks_per_capture
 
+class DepthCamera(BiguaSimSensor):
+    """
+    Captures high-precision depth data (Float32) directly from the GPU.
+    Follows the AirSim architecture:
+    - Channel 0 (Red): Linear Depth in Centimeters.
+    """
+
+    sensor_type = "DepthCamera"
+
+    def __init__(self, client, agent_name, agent_type, name="DepthCamera", config=None):
+        self.config = {} if config is None else config
+        self.debug = False
+
+        width = 256
+        height = 256
+
+        if "CaptureHeight" in self.config:
+            height = self.config["CaptureHeight"]
+
+        if "CaptureWidth" in self.config:
+            width = self.config["CaptureWidth"]
+
+        if "Debug" in self.config:
+            self.debug = self.config['Debug']
+
+        # Float32 RGBA (4 canais)
+        self.shape = (height, width, 4)
+
+        super(DepthCamera, self).__init__(
+            client, agent_name, agent_type, name=name, config=config
+        )
+
+    @property
+    def dtype(self):
+        return np.float32
+
+    @property
+    def data_shape(self):
+        return self.shape
+
+    def set_ticks_per_capture(self, ticks_per_capture):
+        """Sets this DepthCamera to capture a new frame every ticks_per_capture."""
+        if not isinstance(ticks_per_capture, int) or ticks_per_capture < 1:
+            raise BiguaSimConfigurationException(
+                "Invalid ticks_per_capture value " + str(ticks_per_capture)
+            )
+
+        command_to_send = RGBCameraRateCommand(
+            self.agent_name, self.name, ticks_per_capture
+        )
+        self._client.command_center.enqueue_command(command_to_send)
+        self.tick_every = ticks_per_capture
+
+    @property
+    def sensor_data(self):
+        """
+        Retorna APENAS o Depth Map em Metros.
+        Sem chaves falsas de point_cloud.
+        """
+        raw_buffer = self._sensor_data_buffer
+        raw_val = raw_buffer[..., 0]
+        depth_meters = raw_val / 100
+        
+        if self.debug:
+            return {
+                "depth_map": depth_meters,  # Matriz 2D (H, W) em Metros
+                "raw_value": raw_val        # Para debug se precisar
+            }
+        
+        return depth_meters
+
 
 class OrientationSensor(BiguaSimSensor):
     """Gets the forward, right, and up vector for the agent.
@@ -917,29 +988,35 @@ class ImagingSonar(BiguaSimSensor):
     ):
         self.config = {} if config is None else config
 
-        b_range = 512
-        b_azimuth = 512
+        
+        self.b_range = 512
+        self.b_azimuth = 512
         min_range = self.config.get("RangeMin", 0.1)
         max_range = self.config.get("RangeMax", 10)
         azimuth = self.config.get("Azimuth", 120)
+
+        channels = 1
+        if self.config.get("SendGTIntensity", False): channels += 1
+        if self.config.get("SendGTElevation", False): channels += 1
+        if self.config.get("SendGTPointCloud", False): channels += 3
 
         if "RangeBins" in self.config and "RangeRes" in self.config:
             raise ValueError(
                 "Can't set both RangeBins and RangeRes in ImagingSonar, use one of them in your configuration"
             )
         elif "RangeBins" in self.config:
-            b_range = self.config["RangeBins"]
+             self.b_range = self.config["RangeBins"]
         elif "RangeRes" in self.config:
-            b_range = int((max_range - min_range) // self.config["RangeRes"])
+             self.b_range = int((max_range - min_range) // self.config["RangeRes"])
 
         if "AzimuthBins" in self.config and "AzimuthRes" in self.config:
             raise ValueError(
                 "Can't set both AzimuthBins and AzimuthRes in ImagingSonar, use one of them in your configuration"
             )
         elif "AzimuthBins" in self.config:
-            b_azimuth = self.config["AzimuthBins"]
+            self.b_azimuth = self.config["AzimuthBins"]
         elif "AzimuthRes" in self.config:
-            b_azimuth = int(azimuth // self.config["AzimuthRes"])
+            self.b_azimuth = int(azimuth // self.config["AzimuthRes"])
 
         if "ElevationBins" in self.config and "ElevationRes" in self.config:
             raise ValueError(
@@ -956,7 +1033,7 @@ class ImagingSonar(BiguaSimSensor):
                 "Can't set both MultSigma and MultCov in ImagingSonar, use one of them in your configuration"
             )
 
-        self.shape = (b_range, b_azimuth)
+        self.shape = (channels, self.b_range, self.b_azimuth)
 
         super(ImagingSonar, self).__init__(
             client, agent_name, agent_type, name=name, config=config
@@ -969,6 +1046,44 @@ class ImagingSonar(BiguaSimSensor):
     @property
     def data_shape(self):
         return self.shape
+    
+    @property
+    def sensor_data(self):
+        raw_data = self._sensor_data_buffer
+        if raw_data is None: return None
+
+        # Flatten para fatiar dinamicamente
+        data = raw_data.flatten()
+        img_size = self.b_range * self.b_azimuth
+        
+        output = {}
+        current_offset = 0
+
+        # Canal 0: Sempre Raw
+        output["raw"] = data[current_offset : current_offset + img_size].reshape(self.b_range, self.b_azimuth)
+        current_offset += img_size
+
+        # Canal 1: GT Intensity (Se ativo)
+        if self.config.get("SendGTIntensity", False):
+            output["gt_intensity"] = data[current_offset : current_offset + img_size].reshape(self.b_range, self.b_azimuth)
+            current_offset += img_size
+
+        # Canal 2: GT Elevation (Se ativo)
+        if self.config.get("SendGTElevation", False):
+            output["gt_elevation"] = data[current_offset : current_offset + img_size].reshape(self.b_range, self.b_azimuth)
+            current_offset += img_size
+
+        # Canais 3, 4, 5: PointCloud (Se ativo)
+        if self.config.get("SendGTPointCloud", False):
+            px = data[current_offset : current_offset + img_size]
+            py = data[current_offset + img_size : current_offset + 2*img_size]
+            pz = data[current_offset + 2*img_size : current_offset + 3*img_size]
+            
+            pc = np.stack([px, py, pz], axis=1)
+            output["pointcloud"] = pc[np.any(pc != 0, axis=1)]
+            current_offset += 3 * img_size
+
+        return output
 
 
 class SinglebeamSonar(BiguaSimSensor):
@@ -1575,6 +1690,7 @@ class OpticalModemSensor(BiguaSimSensor):
         if isinstance(id_to, int):
             id_to = [id_to]
 
+        
         for i in id_to:
             modem = self.__class__.instances[i]
             command = SendOpticalMessageCommand(
@@ -1584,6 +1700,9 @@ class OpticalModemSensor(BiguaSimSensor):
 
             modem.msg_data = msg_data
 
+        print('-------------------------------------------', self.msg_data, msg_data, id_to, modem.msg_data)
+        return (self.agent_name, self.name, modem.agent_name, modem.name)
+
     @property
     def sensor_data(self):
         if len(self._sensor_data_buffer) > 0 and self._sensor_data_buffer:
@@ -1591,8 +1710,10 @@ class OpticalModemSensor(BiguaSimSensor):
         else:
             data = None
 
+
         # reset buffer
         self.msg_data = None
+
         return data
 
     @property
@@ -2165,7 +2286,8 @@ class SensorDefinition:
         "RaycastLidar": RaycastLidar,
         "RaycastSemanticLidar": RaycastSemanticLidar,
         "FOVDetection": FOVDetection,
-        "AnnotationComponent" : AnnotationComponent
+        "AnnotationComponent" : AnnotationComponent,
+        "DepthCamera" : DepthCamera
     }
 
     # Sensors that need timeout turned off

@@ -6,6 +6,7 @@ It specifies an environment, which contains a number of agents, and the interfac
 with the agents.
 """
 import atexit
+import copy
 import os
 import random
 import subprocess
@@ -142,6 +143,7 @@ class BiguaSimEnvironment:
         self._pre_start_steps = pre_start_steps
         self._copy_state = copy_state
         self._scenario = scenario
+        self._copy_scenario = copy.deepcopy(self._scenario)
         self._initial_agent_defs = agent_definitions
         self._spawned_agent_defs = []
 
@@ -254,6 +256,11 @@ class BiguaSimEnvironment:
             :class:`~biguasim.spaces.ActionSpace`: The action space for the main agent.
         """
         return self._agent.action_space
+    
+    @property
+    def scenario(self):
+        return self._copy_scenario
+
 
     def info(self):
         """Returns a string with specific information about the environment.
@@ -532,6 +539,7 @@ class BiguaSimEnvironment:
         for agent_def in self._initial_agent_defs:
             self.add_agent(agent_def, agent_def.is_main_agent)
 
+        self._scenario = copy.deepcopy(self._copy_scenario)
         self._load_scenario()
 
 
@@ -615,7 +623,6 @@ class BiguaSimEnvironment:
                             "Single agent detected; control command must be a List[int]."
                         )
                         action = dynamics_model.step(state[agent_name], [cmds], dt)
-                        #Processar estado no single
 
                 for i in range(dynamics_model.batch_size):
                     self.agents[f"{agent_name}-id{i}"].act(action[i])
@@ -1181,7 +1188,7 @@ class BiguaSimEnvironment:
             msg_data : The message to be transmitted. Currently can be any python object.
         """
 
-        OpticalModemSensor.instances[id_from].send_message(id_to, msg_data)
+        return OpticalModemSensor.instances[id_from].send_message(id_to, msg_data)
 
     @property
     def modems(self):

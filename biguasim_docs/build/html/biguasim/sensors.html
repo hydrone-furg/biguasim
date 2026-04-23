@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -8,20 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sensors &mdash; BiguaSim 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom_style.css?v=25159554" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom_style.css?v=88f29eac" />
 
   
     <link rel="shortcut icon" href="../_static/favicon.svg"/>
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-      <script src="../_static/darkmode.js?v=3994c1fa"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/darkmode.js?v=3994c1fa"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -40,6 +42,9 @@
           <a href="../index.html" class="icon icon-home">
             BiguaSim
           </a>
+              <div class="version">
+                1.0.0
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -370,7 +375,7 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.AcousticBeaconSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">AcousticBeaconSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AcousticBeaconSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">AcousticBeaconSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AcousticBeaconSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor" title="Link to this definition"></a></dt>
 <dd><p>Acoustic Beacon Sensor. Can send message to other beacon from the <code class="xref py py-meth docutils literal notranslate"><span class="pre">send_acoustic_message()</span></code> command.</p>
 <p>Returning array depends on sent message type. Note received message will be delayed due to time of
 acoustic wave traveling. Possibly message types are, with ϕ representing the azimuth, ϴ
@@ -411,7 +416,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.AcousticBeaconSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -425,7 +430,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.AcousticBeaconSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -439,7 +444,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.AcousticBeaconSensor.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.AcousticBeaconSensor.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -455,7 +460,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.AnnotationComponent">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">AnnotationComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AnnotationComponent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.AnnotationComponent" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">AnnotationComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AnnotationComponent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.AnnotationComponent" title="Link to this definition"></a></dt>
 <dd><p>Returns true if the agent is colliding with anything (including the ground).</p>
 <p><strong>Attributes:</strong></p>
 <table class="autosummary longtable docutils align-default">
@@ -478,7 +483,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.AnnotationComponent.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.AnnotationComponent.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.AnnotationComponent.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -492,7 +497,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.AnnotationComponent.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.AnnotationComponent.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.AnnotationComponent.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -521,7 +526,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.BiguaSimSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">BiguaSimSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">BiguaSimSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor" title="Link to this definition"></a></dt>
 <dd><p>Base class for a sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -559,7 +564,7 @@ attached to a sensor</p></li>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.BiguaSimSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -573,7 +578,7 @@ attached to a sensor</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.BiguaSimSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -589,7 +594,7 @@ attached to a sensor</p></li>
 <dt class="sig sig-object py" id="biguasim.sensors.BiguaSimSensor.rotate">
 <span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.rotate" title="Link to this definition"></a></dt>
 <dd><p>Rotate the sensor. It will be applied in approximately three ticks.
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> or
+<a class="reference internal" href="environments.html#biguasim.environments.BiguaSimEnvironment.step" title="biguasim.environments.BiguaSimEnvironment.step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code></a> or
 <a class="reference internal" href="environments.html#biguasim.environments.BiguaSimEnvironment.tick" title="biguasim.environments.BiguaSimEnvironment.tick"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tick()</span></code></a>.)</p>
 <p>This will not persist after a call to reset(). If you want a persistent rotation for a sensor,
 specify it in your scenario configuration.</p>
@@ -602,7 +607,7 @@ specify it in your scenario configuration.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.BiguaSimSensor.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.BiguaSimSensor.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -618,7 +623,7 @@ specify it in your scenario configuration.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.CameraSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">CameraSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CameraSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.CameraSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">CameraSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CameraSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.CameraSensor" title="Link to this definition"></a></dt>
 <dd><p>Captures agent’s view.</p>
 <p>The default capture resolution is 256x256x256x4, corresponding to the RGBA channels.
 The resolution can be increased, but will significantly impact performance.</p>
@@ -681,7 +686,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.CameraSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.CameraSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.CameraSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -695,7 +700,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.CameraSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.CameraSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.CameraSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -724,7 +729,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.DVLSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">DVLSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DVLSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.DVLSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">DVLSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DVLSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.DVLSensor" title="Link to this definition"></a></dt>
 <dd><p>Doppler Velocity Log Sensor.</p>
 <p>Returns a 1D numpy array of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">velocity_x</span><span class="p">,</span> <span class="n">velocity_y</span><span class="p">,</span> <span class="n">velocity_z</span><span class="p">,</span> <span class="n">range_x_forw</span><span class="p">,</span> <span class="n">range_y_forw</span><span class="p">,</span> <span class="n">range_x_back</span><span class="p">,</span> <span class="n">range_y_back</span><span class="p">]</span>
@@ -755,7 +760,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.DVLSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.DVLSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.DVLSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -769,7 +774,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.DVLSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.DVLSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.DVLSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -785,7 +790,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.DepthSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">DepthSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DepthSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.DepthSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">DepthSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DepthSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.DepthSensor" title="Link to this definition"></a></dt>
 <dd><p>Pressure/Depth Sensor.</p>
 <p>Returns a 1D numpy array of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">position_z</span><span class="p">]</span>
@@ -810,7 +815,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.DepthSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.DepthSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.DepthSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -824,7 +829,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.DepthSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.DepthSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.DepthSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -840,7 +845,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.DynamicsSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">DynamicsSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DynamicsSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.DynamicsSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">DynamicsSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DynamicsSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.DynamicsSensor" title="Link to this definition"></a></dt>
 <dd><p>Gives all relevant information needed for implementing custom dynamics. Returns are all in the global frame and are as follows:</p>
 <blockquote>
 <div><p>[acceleration, velocity, position, angular accel., angular velocity, rpy]</p>
@@ -868,7 +873,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.DynamicsSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.DynamicsSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.DynamicsSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -882,7 +887,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.DynamicsSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.DynamicsSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.DynamicsSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -898,7 +903,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.FOVDetection">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">FOVDetection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FOVDetection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.FOVDetection" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">FOVDetection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FOVDetection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.FOVDetection" title="Link to this definition"></a></dt>
 <dd><p>Returns true if the agent is colliding with anything (including the ground).</p>
 <p><strong>Attributes:</strong></p>
 <table class="autosummary longtable docutils align-default">
@@ -916,7 +921,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.FOVDetection.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.FOVDetection.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.FOVDetection.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -930,7 +935,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.FOVDetection.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.FOVDetection.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.FOVDetection.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -944,7 +949,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.FOVDetection.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.FOVDetection.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.FOVDetection.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -960,7 +965,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.GPSSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">GPSSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GPSSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.GPSSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">GPSSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GPSSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.GPSSensor" title="Link to this definition"></a></dt>
 <dd><p>Gets the location of the agent in the world if the agent is close enough to the surface.</p>
 <p>Returns coordinates in <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z]</span></code> format (see <a class="reference internal" href="../usage/units-and-coordinates.html#coordinate-system"><span class="std std-ref">Coordinate System</span></a>)</p>
 <p><strong>Configuration</strong></p>
@@ -987,7 +992,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.GPSSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.GPSSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.GPSSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1001,7 +1006,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.GPSSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.GPSSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.GPSSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1015,7 +1020,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.GPSSensor.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.GPSSensor.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.GPSSensor.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1031,7 +1036,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.IMUSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">IMUSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IMUSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.IMUSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">IMUSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IMUSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.IMUSensor" title="Link to this definition"></a></dt>
 <dd><p>Inertial Measurement Unit sensor.</p>
 <p>Returns a 2D numpy array of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">[</span><span class="n">accel_x</span><span class="p">,</span> <span class="n">accel_y</span><span class="p">,</span> <span class="n">accel_z</span><span class="p">],</span>
@@ -1064,7 +1069,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.IMUSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.IMUSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.IMUSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1078,7 +1083,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.IMUSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.IMUSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.IMUSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1094,7 +1099,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.ImagingSonar">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ImagingSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ImagingSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ImagingSonar" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ImagingSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ImagingSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ImagingSonar" title="Link to this definition"></a></dt>
 <dd><p>Simulates an imaging sonar. See <a class="reference internal" href="../usage/scenarios.html#configure-octree"><span class="std std-ref">Octree Configuration</span></a> for more on
 how to configure the octree that is used.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> block (see <a class="reference internal" href="../sensors/docs/sensor-config.html#configuration-block"><span class="std std-ref">Configuration Block</span></a>) accepts any of
@@ -1143,7 +1148,7 @@ the options in the following sections.</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.ImagingSonar.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.ImagingSonar.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.ImagingSonar.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1157,7 +1162,7 @@ the options in the following sections.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.ImagingSonar.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.ImagingSonar.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.ImagingSonar.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1173,7 +1178,7 @@ the options in the following sections.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.LocationSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">LocationSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LocationSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.LocationSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">LocationSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LocationSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.LocationSensor" title="Link to this definition"></a></dt>
 <dd><p>Gets the location of the agent in the world.</p>
 <p>Returns coordinates in <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z]</span></code> format (see <a class="reference internal" href="../usage/units-and-coordinates.html#coordinate-system"><span class="std std-ref">Coordinate System</span></a>)</p>
 <p><strong>Configuration</strong></p>
@@ -1195,7 +1200,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.LocationSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.LocationSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.LocationSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1209,7 +1214,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.LocationSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.LocationSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.LocationSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1225,7 +1230,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.MagnetometerSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">MagnetometerSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MagnetometerSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.MagnetometerSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">MagnetometerSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MagnetometerSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.MagnetometerSensor" title="Link to this definition"></a></dt>
 <dd><p>Gets the global x-axis (or given vector) in the local frame.</p>
 <p><strong>Configuration</strong></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> block (see <a class="reference internal" href="../sensors/docs/sensor-config.html#configuration-block"><span class="std std-ref">Configuration Block</span></a>) accepts the
@@ -1247,7 +1252,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.MagnetometerSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.MagnetometerSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.MagnetometerSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1261,7 +1266,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.MagnetometerSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.MagnetometerSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.MagnetometerSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1277,7 +1282,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.OpticalModemSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">OpticalModemSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OpticalModemSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">OpticalModemSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OpticalModemSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor" title="Link to this definition"></a></dt>
 <dd><p>Handles communication between agents using an optical modem. Can send message to other modem from the <code class="xref py py-meth docutils literal notranslate"><span class="pre">send_optical_message()</span></code> command.</p>
 <p><strong>Configuration</strong></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> block (see <a class="reference internal" href="../sensors/docs/sensor-config.html#configuration-block"><span class="std std-ref">Configuration Block</span></a>) accepts the
@@ -1307,7 +1312,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.OpticalModemSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1321,7 +1326,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.OpticalModemSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1335,7 +1340,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.OpticalModemSensor.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.OpticalModemSensor.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1351,7 +1356,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.OrientationSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">OrientationSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.OrientationSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">OrientationSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.OrientationSensor" title="Link to this definition"></a></dt>
 <dd><p>Gets the forward, right, and up vector for the agent.
 Note that this is based on the sensor’s frame, not the agent’s frame so in the IMU socket,
 it will be NED, and in COM socket it will NWU. Our provided configurations have the sensor in the IMU socket.</p>
@@ -1374,7 +1379,7 @@ it will be NED, and in COM socket it will NWU. Our provided configurations have 
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.OrientationSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.OrientationSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.OrientationSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1388,7 +1393,7 @@ it will be NED, and in COM socket it will NWU. Our provided configurations have 
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.OrientationSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.OrientationSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.OrientationSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1404,7 +1409,7 @@ it will be NED, and in COM socket it will NWU. Our provided configurations have 
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.PoseSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">PoseSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.PoseSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">PoseSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.PoseSensor" title="Link to this definition"></a></dt>
 <dd><p>Gets the forward, right, and up vector for the agent.
 Note that this is based on the sensor’s frame, not the agent’s frame so in the IMU socket,
 it will be NED, and in COM socket it will NWU. Our provided configurations have the sensor in the IMU socket.</p>
@@ -1427,7 +1432,7 @@ it will be NED, and in COM socket it will NWU. Our provided configurations have 
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.PoseSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.PoseSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.PoseSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1441,7 +1446,7 @@ it will be NED, and in COM socket it will NWU. Our provided configurations have 
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.PoseSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.PoseSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.PoseSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1457,7 +1462,7 @@ it will be NED, and in COM socket it will NWU. Our provided configurations have 
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.ProfilingSonar">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ProfilingSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ProfilingSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ProfilingSonar" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ProfilingSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ProfilingSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ProfilingSonar" title="Link to this definition"></a></dt>
 <dd><p>Simulates a multibeam profiling sonar. This is largely based off of the imaging sonar (<a class="reference internal" href="#biguasim.sensors.ImagingSonar" title="biguasim.sensors.ImagingSonar"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagingSonar</span></code></a>), just with
 different defaults. See <a class="reference internal" href="../usage/scenarios.html#configure-octree"><span class="std std-ref">Octree Configuration</span></a> for more on how to configure the octree that is used.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> block (see <a class="reference internal" href="../sensors/docs/sensor-config.html#configuration-block"><span class="std std-ref">Configuration Block</span></a>) accepts any of
@@ -1496,7 +1501,7 @@ the options in the following sections.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBCamera">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RGBCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RGBCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RGBCamera" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RGBCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RGBCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RGBCamera" title="Link to this definition"></a></dt>
 <dd><p>Captures agent’s view.</p>
 <p>The default capture resolution is 256x256x256x4, corresponding to the RGBA channels.
 The resolution can be increased, but will significantly impact performance.</p>
@@ -1528,7 +1533,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBCamera.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RGBCamera.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RGBCamera.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1542,7 +1547,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBCamera.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RGBCamera.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RGBCamera.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1571,7 +1576,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBDCamera">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RGBDCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RGBDCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RGBDCamera" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RGBDCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RGBDCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RGBDCamera" title="Link to this definition"></a></dt>
 <dd><dl>
 <dt><strong>*WIP: need to fully test this sensor*</strong></dt><dd><p>Captures agent’s view.</p>
 <p>The default capture resolution is 256x256x256x4, corresponding to the RGBA channels.
@@ -1645,7 +1650,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBDCamera.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RGBDCamera.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RGBDCamera.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1659,7 +1664,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBDCamera.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RGBDCamera.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RGBDCamera.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1673,7 +1678,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RGBDCamera.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.RGBDCamera.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.RGBDCamera.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1702,7 +1707,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.RangeFinderSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RangeFinderSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RangeFinderSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RangeFinderSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RangeFinderSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RangeFinderSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RangeFinderSensor" title="Link to this definition"></a></dt>
 <dd><p>Returns distances to nearest collisions in the directions specified by
 the parameters. For example, if an agent had two range sensors at different
 angles with 24 lasers each, the LaserDebug traces would look something like
@@ -1733,7 +1738,7 @@ following options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RangeFinderSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RangeFinderSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RangeFinderSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1747,7 +1752,7 @@ following options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RangeFinderSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RangeFinderSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RangeFinderSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1763,7 +1768,7 @@ following options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastLidar">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RaycastLidar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RaycastLidar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RaycastLidar" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RaycastLidar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RaycastLidar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RaycastLidar" title="Link to this definition"></a></dt>
 <dd><p><strong>*WIP: need to fully test this senssor*</strong>
 Runs Agent’s Lidar</p>
 <p><strong>Configuration</strong></p>
@@ -1802,7 +1807,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastLidar.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RaycastLidar.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RaycastLidar.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1816,7 +1821,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastLidar.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RaycastLidar.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RaycastLidar.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1830,7 +1835,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastLidar.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.RaycastLidar.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.RaycastLidar.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1846,7 +1851,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastSemanticLidar">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RaycastSemanticLidar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RaycastSemanticLidar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RaycastSemanticLidar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RaycastSemanticLidar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar" title="Link to this definition"></a></dt>
 <dd><p><strong>*WIP: need to fully test this senssor*</strong>
 Runs Agent’s Lidar</p>
 <p><strong>Configuration</strong></p>
@@ -1885,7 +1890,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastSemanticLidar.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1899,7 +1904,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastSemanticLidar.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1913,7 +1918,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RaycastSemanticLidar.sensor_data">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar.sensor_data" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.RaycastSemanticLidar.sensor_data" title="Link to this definition"></a></dt>
 <dd><p>Get the sensor data buffer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1929,7 +1934,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.RotationSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RotationSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RotationSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">RotationSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.RotationSensor" title="Link to this definition"></a></dt>
 <dd><p>Gets the rotation of the agent in the world, with rotation XYZ about the fixed frame, in degrees.</p>
 <p>Returns <code class="docutils literal notranslate"><span class="pre">[roll,</span> <span class="pre">pitch,</span> <span class="pre">yaw]</span></code> (see <a class="reference internal" href="../usage/units-and-coordinates.html#rotations"><span class="std std-ref">Rotations</span></a>)</p>
 <p><strong>Attributes:</strong></p>
@@ -1945,7 +1950,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RotationSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RotationSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.RotationSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1959,7 +1964,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.RotationSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RotationSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.RotationSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1975,7 +1980,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.SemanticSegmentationCamera">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SemanticSegmentationCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SemanticSegmentationCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SemanticSegmentationCamera" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SemanticSegmentationCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SemanticSegmentationCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SemanticSegmentationCamera" title="Link to this definition"></a></dt>
 <dd><p><strong>*WIP: need to fully test this senssor*</strong>
 Captures agent’s view.</p>
 <p>The default capture resolution is 256x256x256x4, corresponding to the RGBA channels.
@@ -2008,7 +2013,7 @@ options:</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.SemanticSegmentationCamera.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.SemanticSegmentationCamera.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.SemanticSegmentationCamera.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2022,7 +2027,7 @@ options:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.SemanticSegmentationCamera.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.SemanticSegmentationCamera.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.SemanticSegmentationCamera.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2051,7 +2056,7 @@ options:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.SensorDefinition">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SensorDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socket</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lcm_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tick_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SensorDefinition" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SensorDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socket</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lcm_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tick_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SensorDefinition" title="Link to this definition"></a></dt>
 <dd><p>A class for new sensors and their parameters, to be used for adding new sensors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2095,7 +2100,7 @@ relative to agent (see <a class="reference internal" href="../usage/units-and-co
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.SensorFactory">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SensorFactory</span></span><a class="headerlink" href="#biguasim.sensors.SensorFactory" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SensorFactory</span></span><a class="headerlink" href="#biguasim.sensors.SensorFactory" title="Link to this definition"></a></dt>
 <dd><p>Given a sensor definition, constructs the appropriate BiguaSimSensor object.</p>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
@@ -2107,7 +2112,7 @@ relative to agent (see <a class="reference internal" href="../usage/units-and-co
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.sensors.SensorFactory.build_sensor">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_def</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SensorFactory.build_sensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_def</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SensorFactory.build_sensor" title="Link to this definition"></a></dt>
 <dd><p>Constructs a given sensor associated with client</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2124,7 +2129,7 @@ relative to agent (see <a class="reference internal" href="../usage/units-and-co
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.SidescanSonar">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SidescanSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SidescanSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SidescanSonar" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SidescanSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SidescanSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SidescanSonar" title="Link to this definition"></a></dt>
 <dd><p>Simulates a sidescan sonar. See <a class="reference internal" href="../usage/scenarios.html#configure-octree"><span class="std std-ref">Octree Configuration</span></a> for more on
 how to configure the octree that is used.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> block (see <a class="reference internal" href="../sensors/docs/sensor-config.html#configuration-block"><span class="std std-ref">Configuration Block</span></a>) accepts any of
@@ -2168,7 +2173,7 @@ the options in the following sections.</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.SidescanSonar.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.SidescanSonar.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.SidescanSonar.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2182,7 +2187,7 @@ the options in the following sections.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.SidescanSonar.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.SidescanSonar.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.SidescanSonar.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2198,7 +2203,7 @@ the options in the following sections.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.SinglebeamSonar">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SinglebeamSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SinglebeamSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SinglebeamSonar" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">SinglebeamSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SinglebeamSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.SinglebeamSonar" title="Link to this definition"></a></dt>
 <dd><p>Simulates an echosounder, which is a sonar sensor with a single cone shaped beam. See <a class="reference internal" href="../usage/scenarios.html#configure-octree"><span class="std std-ref">Octree Configuration</span></a> for more on
 how to configure the octree that is used.</p>
 <p>Returns a 1D numpy array of the average intensities held in each range bin of the sensor. The length of the array is specified by the number of range bins chosen for the sensor.</p>
@@ -2246,7 +2251,7 @@ the options in the following sections.</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.SinglebeamSonar.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.SinglebeamSonar.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.SinglebeamSonar.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2260,7 +2265,7 @@ the options in the following sections.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.SinglebeamSonar.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.SinglebeamSonar.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.SinglebeamSonar.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2276,7 +2281,7 @@ the options in the following sections.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.VelocitySensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">VelocitySensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.VelocitySensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">VelocitySensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.VelocitySensor" title="Link to this definition"></a></dt>
 <dd><p>Returns the x, y, and z velocity of the sensor in the global frame.</p>
 <p><strong>Attributes:</strong></p>
 <table class="autosummary longtable docutils align-default">
@@ -2291,7 +2296,7 @@ the options in the following sections.</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.VelocitySensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.VelocitySensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.VelocitySensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2305,7 +2310,7 @@ the options in the following sections.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.VelocitySensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.VelocitySensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.VelocitySensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2321,7 +2326,7 @@ the options in the following sections.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.ViewportCapture">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ViewportCapture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ViewportCapture'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ViewportCapture" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ViewportCapture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ViewportCapture'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ViewportCapture" title="Link to this definition"></a></dt>
 <dd><p>Captures what the viewport is seeing.</p>
 <p>The ViewportCapture is faster than the RGB camera, but there can only be one camera
 and it must capture what the viewport is capturing. If performance is
@@ -2354,7 +2359,7 @@ dimensions.</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.ViewportCapture.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.ViewportCapture.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.ViewportCapture.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2368,7 +2373,7 @@ dimensions.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.ViewportCapture.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.ViewportCapture.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.ViewportCapture.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2384,7 +2389,7 @@ dimensions.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.WorldNumSensor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">WorldNumSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.WorldNumSensor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">WorldNumSensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultSensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.WorldNumSensor" title="Link to this definition"></a></dt>
 <dd><p>Returns any numeric value from the world corresponding to a given key. This is
 world specific.</p>
 <p><strong>Attributes:</strong></p>
@@ -2400,7 +2405,7 @@ world specific.</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.WorldNumSensor.data_shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.WorldNumSensor.data_shape" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.WorldNumSensor.data_shape" title="Link to this definition"></a></dt>
 <dd><p>The shape of the sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2414,7 +2419,7 @@ world specific.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.sensors.WorldNumSensor.dtype">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.WorldNumSensor.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.WorldNumSensor.dtype" title="Link to this definition"></a></dt>
 <dd><p>The type of data in the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2441,7 +2446,7 @@ world specific.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Nautec FURG.</p>
+    <p>&#169; Copyright FURG.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

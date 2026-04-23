@@ -14,59 +14,12 @@ Note, running this script will create octrees while running and may cause some p
     import matplotlib.pyplot as plt
     import numpy as np
 
-    config = {
-            "package_name": "SkyDive",
-            "world": "Bridge",
-            "main_agent" : "auv0",
-            "agents": [
-                {
-                    "agent_name": "auv0",
-                    "agent_type": "TorpedoAUV",
-                    "sensors": [
-                        {
-                            "sensor_type": "DynamicsSensor",
-                            "socket": "IMUSocket",
-                            "configuration": {
-                                "UseCOM": True,
-                                "UseRPY": False  
-                            }
-                        },
-                        {
-                            "sensor_type": "SidescanSonar",
-                            "socket": "SonarSocket",
-                            "Hz": 10,
-                            "configuration": {
-                                "Azimuth": 170,
-                                "Elevation": 0.25,
-                                "RangeMin": 0.5,
-                                "RangeMax": 40,
-                                "RangeBins": 2000,
-                                "AddSigma": 0.05,
-                                "MultSigma": 0.05,
-                                "ShowWarning": True,
-                                "InitOctreeRange": 50,
-                                "ViewRegion": True,
-                                "ViewOctree": -10,
-                                "WaterDensity": 997,
-                                "WaterSpeedSound": 1480,
-                                "UseApprox": True
-                            }
-                        }
-                    ],
-                    "dynamics" : {
-                        "batch_size" : 1,
-                    },
-                    "control_abstraction": "cmd_rudders_sterns_motor_speed",
-                    "location": [43, 34, -7]
-                }
-            ]
-        }
-
-
-
-    config_ = config['agents'][0]['sensors'][1]["configuration"]
-    maxR = config_['RangeMax']
-    binsR = config_['RangeBins']
+    #### GET SONAR CONFIG
+    scenario = "OpenWater-TorpedoSidescanSonar"
+    config = biguasim.packagemanager.get_scenario(scenario)
+    config = config['agents'][0]['sensors'][-1]["configuration"]
+    maxR = config['RangeMax']
+    binsR = config['RangeBins']
 
     #### GET PLOT READY
     plt.ion()
@@ -82,11 +35,12 @@ Note, running this script will create octrees while running and may cause some p
     plt.gca().invert_yaxis()
     plt.gcf().canvas.flush_events()
 
-    command = [0,0,0,0,0]
-
-    with biguasim.make(scenario_cfg=config) as env:
+    #### RUN SIMULATION
+    command = np.array([0,0,0,0,20])
+    with biguasim.make(scenario) as env:
         for i in range(1000):
-            state = env.step(command)["auv0"][0]
+            env.act("auv0", command)
+            state = env.tick()
 
             if 'SidescanSonar' in state:
                 data = np.roll(data, 1, axis=0)
