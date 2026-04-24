@@ -9,9 +9,7 @@ import urllib.error
 import fnmatch
 import zipfile
 import pprint
-
-import time
-import select
+import ssl
 
 from queue import Queue
 from threading import Thread
@@ -21,12 +19,25 @@ from biguasim import __version__
 from biguasim.exceptions import BiguaSimException, NotFoundException
 
 
-# BACKEND_URL = "https://robots.et.byu.edu/holo/"
-BACKEND_URL = "http://192.168.2.110:8000/"
+BACKEND_URL = os.environ.get("BS_WORLDS_URL", "https://10.228.0.40:8000/")
+_DEFAULT_CA_CERT = os.path.join(os.path.dirname(__file__), "certs/server.crt")
+_CA_CERT = os.environ.get("BS_WORLDS_CA_CERT", _DEFAULT_CA_CERT)
+_VERIFY_SSL = os.environ.get("BS_WORLDS_VERIFY_SSL", "true").lower() not in ("false", "0", "no")
+
+
+def _make_ssl_context() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    if not _VERIFY_SSL:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    elif os.path.isfile(_CA_CERT):
+        ctx.load_verify_locations(_CA_CERT)
+    return ctx
+
 
 def _get_from_backend(rel_url):
     """
-    Gets the resource given at rel_url, assumes it is a utf-8 text file
+    Gets the resource given at rel_url, assumes it is a utf-8 text file.
 
     Args:
         rel_url (:obj:`str`): url relative to BACKEND_URL to fetch
@@ -34,9 +45,8 @@ def _get_from_backend(rel_url):
     Returns:
         :obj:`str`: The resource at rel_url as a string
     """
-    req = urllib.request.urlopen(BACKEND_URL + rel_url)
-    data = req.read()
-    return data.decode('utf-8')
+    with urllib.request.urlopen(BACKEND_URL + rel_url, context=_make_ssl_context()) as resp:
+        return resp.read().decode("utf-8")
 
 
 def available_packages():
