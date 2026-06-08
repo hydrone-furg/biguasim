@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import socket
 import struct
+import math
 from typing import Optional
 
 import numpy as np
@@ -159,21 +160,17 @@ class ArduPilotBridge:
         ]
 
     def build_json_state(self, agent_state: dict, sim_time: float) -> dict:
-        """
-        Converts the raw agent state in the simulator (NWU/GLU standard) to the ArduPilot 
-        JSON state format (NED/FRD standard).
 
-        :param agent_state: Dictionary containing BiguaSim sensor data (Location, Velocity, IMU, Depth, etc.).
-        :type agent_state: dict
-        :param sim_time: Current simulation time in seconds.
-        :type sim_time: float
-        :returns: Formatted dictionary ready to be serialized into JSON.
-        :rtype: dict
-        """
+        def _all_finite(*lists):
+            return all(math.isfinite(v) for lst in lists for v in lst)
+
         accel, gyro = imu_glu_to_frd(agent_state["IMUSensor"])
-        pos = pos_nwu_to_ap(agent_state["LocationSensor"].tolist(), self._gps_origin)
-        vel = vel_nwu_to_ned(agent_state["VelocitySensor"].tolist())
+        pos  = pos_nwu_to_ap(agent_state["LocationSensor"].tolist(), self._gps_origin)
+        vel  = vel_nwu_to_ned(agent_state["VelocitySensor"].tolist())
         quat = quat_glu2nwu_to_frd2ned(agent_state["DynamicsSensor"][-4:].tolist())
+
+        if not _all_finite(accel, gyro, pos, vel, quat):
+            return None
 
         state = {
             "timestamp": sim_time,

@@ -170,6 +170,12 @@ class VehicleModel(ABC):
         state = self.unpack_state(s, self.idxs, self.batch_size)
         state['q'][self.idxs] = state['q'][self.idxs] / \
                                 torch.norm(state['q'][self.idxs], dim=-1).unsqueeze(-1)
-
+        if self.batch_size == 1:
+            w_in = state['w'][0].cpu().numpy()
+            w_dot_out = w_dot[0].cpu().numpy()
+            omega = cmd_ctrl[0].cpu().numpy()   # rotor speeds que vieram
+            # Δw = w_dot * (1/ticks_per_sec)
+            #print(f"t={dt:.3f}  omega={omega}  w={w_in}  w_dot={w_dot_out}")
+            
         # return Transform.convert_NED_to_NWU(state['q'][self.idxs], v_dot, w_dot).cpu().tolist()    
         return torch.cat([v_dot, w_dot], dim=1).cpu().tolist()
