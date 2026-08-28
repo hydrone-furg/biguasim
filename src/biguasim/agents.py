@@ -261,8 +261,8 @@ class BlueROV2(BiguaSimAgent):
     def __repr__(self):
         return "BlueROV2 " + self.name
     
-class BlueROVHeavy(BiguaSimAgent):
-    agent_type = 'BlueROVHeavy'
+class BlueROV2Heavy(BiguaSimAgent):
+    agent_type = 'BlueROV2Heavy'
 
     @property
     def control_abstractions(self):
@@ -281,7 +281,7 @@ class BlueROVHeavy(BiguaSimAgent):
 
 
     def __repr__(self):
-        return "BlueROVHeavy " + self.name
+        return "BlueROV2Heavy " + self.name
     
 class DjiMatrice(BiguaSimAgent):
     agent_type = 'DjiMatrice'
@@ -344,7 +344,7 @@ class AgentDefinition:
     _type_keys = {
         "BlueBoat": BlueBoat,
         "BlueROV2": BlueROV2,
-        "BlueROVHeavy" : BlueROVHeavy,
+        "BlueROV2Heavy" : BlueROV2Heavy,
         "DjiMatrice" : DjiMatrice,
         "TorpedoAUV": TorpedoAUV,
     }

@@ -124,7 +124,7 @@ class BlueROV2(uuv.HexaCopterFiveDoF):
         return self._params                 
                              
 
-class BlueROVHeavy(uuv.OctaCopterSixDoF):                                                                   
+class BlueROV2Heavy(uuv.OctaCopterSixDoF):                                                                   
     _params = {
         'rho' : 997,      # Water density
 
@@ -187,13 +187,13 @@ class BlueROVHeavy(uuv.OctaCopterSixDoF):
     def __init__(self, batch_size=1, device='cpu', control_abstraction='cmd_motor_speeds', params= None):    
         super().__init__(                                                                      
                         batch_size,                                                            
-                        params= params or BlueROVHeavy._params,                                       
+                        params= params or BlueROV2Heavy._params,                                       
                         device=device,                                                         
                         control_abstraction=control_abstraction)                               
                                                                                                
     @property                                                                                  
     def params(self) -> dict:                                                                  
-        return BlueROVHeavy._params      
+        return BlueROV2Heavy._params      
 
 class DjiMatrice(uav.QuadCopterX):
     _params = {
@@ -376,7 +376,7 @@ class ModelsFactory:
     _types = {
         'BlueBoat' : BlueBoat,
         'BlueROV2' : BlueROV2,
-        'BlueROVHeavy' : BlueROVHeavy,
+        'BlueROV2Heavy' : BlueROV2Heavy,
         'DjiMatrice' : DjiMatrice,
         'TorpedoAUV' : TorpedoAUV
     }
