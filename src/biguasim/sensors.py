@@ -1874,6 +1874,10 @@ class RGBDCamera(BiguaSimSensor):
 
     def __init__(self, client, agent_name, agent_type, name="RGBDCamera", config=None):
         self.config = {} if config is None else config
+        self.config.setdefault(
+            "convertToDistance",
+            False,
+        )
 
         width = 256
         height = 256
@@ -1920,30 +1924,23 @@ class RGBDCamera(BiguaSimSensor):
         self.tick_every = ticks_per_capture
 
     @property
-    def sensor_data(self):
-        # data: self._sensor_data_buffer
-        # It already is a camera_width x camera_height x 4, so we just need to add another channel for converted distances
+    def sensor_data(self) -> np.ndarray:
+        """Initialize the output dictionary and store the raw sensor buffer (RGBA image)
         
-        # return self._sensor_data_buffer
+        data: self._sensor_data_buffer
+        It already is a camera_width x camera_height x 4, so we just need to add another channel for converted distances
+        return self._sensor_data_buffer
 
-        # self._sensor_data_buffer[..., 1] = np.zeros(shape=(self.shape[0], self.shape[1]))
-        
-        # print(np.concatenate((self._sensor_data_buffer, np.zeros(shape=(self.shape[0], self.shape[1], 1))), axis=2).shape)
+        self._sensor_data_buffer[..., 1] = np.zeros(shape=(self.shape[0], self.shape[1]))
+        """
         
         data = {}
         data["image"] = self._sensor_data_buffer
 
 
         if (self.config["convertToDistance"]):
-            distances = []
-            alpha_channel = np.array(self._sensor_data_buffer[..., 3], np.int64)
-
-            for i in range(len(alpha_channel)):
-                distances.append([])
-                for j in range(len(alpha_channel[i])):
-                    distances[i].append(int((alpha_channel[i][j] * 1000) / 255.0)) 
-                    # distances[i][j] = 
-            data["depth"] = distances
+            alpha = self._sensor_data_buffer[..., 3].astype(np.float32)
+            data["depth"] = alpha * (1000.0 / 255.0)
 
         return data
 
