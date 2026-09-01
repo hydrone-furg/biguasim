@@ -1874,6 +1874,10 @@ class RGBDCamera(BiguaSimSensor):
 
     def __init__(self, client, agent_name, agent_type, name="RGBDCamera", config=None):
         self.config = {} if config is None else config
+        self.config.setdefault(
+            "convertToDistance",
+            False,
+        )
 
         width = 256
         height = 256
