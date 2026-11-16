@@ -464,3 +464,39 @@ class SendOpticalMessageCommand(Command):
         self.add_string_parameters(from_sensor_name)
         self.add_string_parameters(to_agent_name)
         self.add_string_parameters(to_sensor_name)
+
+class SpawnPropCommand(Command):
+    """Spawn a static mesh from the world's project as a named prop.
+
+    Args:
+        name (:obj:`str`): Unique name used to remove the prop later.
+        mesh (:obj:`str`): Unreal asset reference of the static mesh (``/Game/...`` path or bare asset name).
+        location (:obj:`list` of :obj:`float`): ``[x, y, z]`` location in meters.
+        rotation (:obj:`list` of :obj:`float`): ``[roll, pitch, yaw]`` rotation in degrees.
+        scale (:obj:`list` of :obj:`float`): ``[x, y, z]`` scale factors.
+        sim_physics (:obj:`bool`): Whether the prop is affected by gravity and collisions.
+        material (:obj:`str`): Unreal asset reference of a material; empty keeps the mesh's own.
+        tag (:obj:`str`): Actor tag; empty for none.
+
+    """
+    def __init__(self, name, mesh, location, rotation, scale, sim_physics, material, tag):
+        Command.__init__(self)
+        self._command_type = "SpawnProp"
+        self.add_number_parameters(location)
+        self.add_number_parameters(rotation)
+        self.add_number_parameters(scale)
+        self.add_number_parameters(int(sim_physics))
+        self.add_string_parameters([name, mesh, material, tag])
+
+
+class RemovePropCommand(Command):
+    """Destroy a prop spawned with :class:`SpawnPropCommand`.
+
+    Args:
+        name (:obj:`str`): Name the prop was spawned with.
+
+    """
+    def __init__(self, name):
+        Command.__init__(self)
+        self._command_type = "RemoveProp"
+        self.add_string_parameters(name)

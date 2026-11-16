@@ -102,10 +102,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.usv.Catamaran.get_cmd_motor_speeds"><code class="docutils literal notranslate"><span class="pre">Catamaran.get_cmd_motor_speeds()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#biguasim.dynamics.usv.Differential"><code class="docutils literal notranslate"><span class="pre">Differential</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.usv.Differential.get_cmd_motor_speeds"><code class="docutils literal notranslate"><span class="pre">Differential.get_cmd_motor_speeds()</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biguasim.dynamics.agents">Agents Factory</a><ul>
@@ -125,12 +121,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.agents.DjiMatrice.params"><code class="docutils literal notranslate"><span class="pre">DjiMatrice.params</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#biguasim.dynamics.agents.ModelsFactory"><code class="docutils literal notranslate"><span class="pre">ModelsFactory</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.agents.ModelsFactory.build_model"><code class="docutils literal notranslate"><span class="pre">ModelsFactory.build_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.dynamics.agents.Hydrone"><code class="docutils literal notranslate"><span class="pre">Hydrone</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.agents.Hydrone.params"><code class="docutils literal notranslate"><span class="pre">Hydrone.params</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#biguasim.dynamics.agents.Torpedo"><code class="docutils literal notranslate"><span class="pre">Torpedo</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.agents.Torpedo.params"><code class="docutils literal notranslate"><span class="pre">Torpedo.params</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.dynamics.agents.ModelsFactory"><code class="docutils literal notranslate"><span class="pre">ModelsFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#biguasim.dynamics.agents.ModelsFactory.build_model"><code class="docutils literal notranslate"><span class="pre">ModelsFactory.build_model()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.dynamics.agents.TorpedoAUV"><code class="docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a><ul>
@@ -189,7 +185,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uav.QuadCopterX" title="biguasim.dynamics.uav.QuadCopterX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuadCopterX</span></code></a>(batch_size, params, device, ...)</p></td>
-<td><p></p></td>
+<td><p>Concrete vehicle model for a standard X-frame quadrotor operating in air only.</p></td>
 </tr>
 </tbody>
 </table>
@@ -197,18 +193,96 @@
 <dt class="sig sig-object py" id="biguasim.dynamics.uav.QuadCopterX">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.uav.</span></span><span class="sig-name descname"><span class="pre">QuadCopterX</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uav.QuadCopterX" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VehicleModel</span></code></p>
+<p>Concrete vehicle model for a standard X-frame quadrotor operating in air only.</p>
+<p>Extends VehicleModel with a full rigid-body dynamics pipeline and a
+cascaded SE(3) control architecture. Operates in a single domain (air)
+with a square 4×4 allocation matrix mapping [thrust, Mx, My, Mz] to
+4 rotor speeds exactly.</p>
+<dl class="simple">
+<dt>Control abstractions supported:</dt><dd><ul class="simple">
+<li><p>‘cmd_motor_speeds’ : Direct rotor speed pass-through.</p></li>
+<li><p>‘cmd_vel’          : 3D velocity tracking using SE(3) attitude control.</p></li>
+<li><p>‘cmd_vel_yaw’      : 3D velocity + relative yaw offset [vx, vy, vz, yaw_deg].</p></li>
+<li><p>‘cmd_pos_yaw’      : 3D position + absolute yaw     [x,  y,  z,  yaw_deg].</p></li>
+</ul>
+</dd>
+<dt>Control architecture (cmd_vel / cmd_vel_yaw / cmd_pos_yaw):</dt><dd><p>Position PD  →  Velocity P  →  Desired force F_des
+F_des  →  Desired orientation R_des  (SE(3) geometric controller)
+R_des  →  Attitude error  →  Desired moment M_des
+[T, M_des]  →  TM_to_f (allocation inverse)  →  Rotor thrusts  →  Motor speeds</p>
+</dd>
+<dt>Frame conventions (inherited from VehicleModel):</dt><dd><ul class="simple">
+<li><p>World frame : Z-up, right-handed.</p></li>
+<li><p>Body frame  : X-forward, Y-left, Z-up.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>int</em>) – Number of vehicles simulated in parallel.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Vehicle parameter dictionary.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Torch device string, e.g. ‘cpu’ or ‘cuda:0’.</p></li>
+<li><p><strong>control_abstraction</strong> (<em>str</em>) – One of the supported control abstraction keys above.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uav.QuadCopterX.get_cmd_motor_speeds" title="biguasim.dynamics.uav.QuadCopterX.get_cmd_motor_speeds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmd_motor_speeds</span></code></a>(state, control)</p></td>
-<td><p></p></td>
+<td><p>Converts a high-level control command into rotor speed commands using a geometric SE(3) controller cascaded with optional position and yaw loops.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.uav.QuadCopterX.get_cmd_motor_speeds">
-<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uav.QuadCopterX.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#biguasim.dynamics.uav.QuadCopterX.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
+<dd><p>Converts a high-level control command into rotor speed commands using a
+geometric SE(3) controller cascaded with optional position and yaw loops.</p>
+<dl class="simple">
+<dt>All three non-passthrough abstractions share the same inner loop:</dt><dd><ol class="arabic simple">
+<li><p>Compute desired force F_des from velocity or position error.</p></li>
+<li><p>Derive desired orientation R_des that aligns body +Z with F_des
+and body +X with the desired yaw heading (Gram-Schmidt).</p></li>
+<li><dl class="simple">
+<dt>Compute orientation error via the skew-symmetric error matrix:</dt><dd><p>S_err   = ½ (R_des^T R − R^T R_des)
+att_err = vee(S_err)    (extracts the Lie algebra error vector)</p>
+</dd>
+</dl>
+</li>
+<li><p>Compute desired moment via PD law on att_err and angular velocity,
+with gyroscopic feedforward: M = I(−kp e_R − kd ω) + ω × Iω</p></li>
+<li><p>Map [T, Mx, My, Mz] through TM_to_f to rotor thrusts.</p></li>
+<li><p>Convert rotor thrusts to signed motor speeds: ω = sign(F)√(<a href="#id1"><span class="problematic" id="id2">|F|</span></a>/k_eta).</p></li>
+</ol>
+</dd>
+<dt>Large-yaw guard (cmd_vel_yaw and cmd_pos_yaw):</dt><dd><p>When <a href="#id3"><span class="problematic" id="id4">|ψ_des|</span></a> &gt; π/2, c1_des flips sign and breaks the Gram-Schmidt
+frame construction. In this case, the rotation matrix R is taken from
+the quaternion composed with the yaw offset (R_r) rather than the raw
+state quaternion (R_q), preventing discontinuities near ±π.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>dict</em>) – Structured state dict {x, v, q, w} from VehicleModel.map_states.</p></li>
+<li><p><strong>control</strong> (<em>dict</em>) – Control command dict with key ‘cmd_ctrl’ (B, D).
+D = 3 for cmd_vel, D = 4 for cmd_vel_yaw / cmd_pos_yaw.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Rotor speed commands (B, n_rotors), signed rad/s.</dt><dd><p>Sign encodes spin direction for yaw torque allocation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -219,13 +293,13 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.HexaCopterFiveDoF" title="biguasim.dynamics.uuv.HexaCopterFiveDoF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HexaCopterFiveDoF</span></code></a>(batch_size, params, ...)</p></td>
-<td><p></p></td>
+<td><p>Concrete vehicle model for a 5-DOF underwater hexarotor (BlueROV2-style).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.OctaCopterSixDoF" title="biguasim.dynamics.uuv.OctaCopterSixDoF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OctaCopterSixDoF</span></code></a>(batch_size, params, device, ...)</p></td>
-<td><p></p></td>
+<td><p>Fully actuated 6-DOF underwater vehicle model with 8 thrusters arranged in two functional groups:</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.TorpedoAUV" title="biguasim.dynamics.uuv.TorpedoAUV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a>(batch_size, params, device, ...)</p></td>
-<td><p></p></td>
+<td><p>6-DOF torpedo-shaped Autonomous Underwater Vehicle (AUV) model.</p></td>
 </tr>
 </tbody>
 </table>
@@ -233,18 +307,103 @@
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.HexaCopterFiveDoF">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.uuv.</span></span><span class="sig-name descname"><span class="pre">HexaCopterFiveDoF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.HexaCopterFiveDoF" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VehicleModel</span></code></p>
+<p>Concrete vehicle model for a 5-DOF underwater hexarotor (BlueROV2-style).</p>
+<p>Extends VehicleModel with hydrodynamic external forces and a 6×6 wrench
+allocation for a vehicle that operates exclusively underwater. The frame
+carries 6 thrusters arranged as follows:</p>
+<blockquote>
+<div><p>Thrusters 0–1 : vertical (body +Z), control heave and roll.
+Thrusters 2–5 : horizontal, angled ±45° in the body XY-plane,</p>
+<blockquote>
+<div><p>control surge (X), sway (Y), and yaw (Mz).</p>
+</div></blockquote>
+</div></blockquote>
+<p>The vehicle is 5-DOF because pitch (My) is structurally unconstrained —
+the symmetric thruster layout produces no net pitch moment, and no pitch
+controller is included. self.gen_moments enforces this by zeroing the
+pitch row of all computed moment vectors.</p>
+<dl class="simple">
+<dt>Physics model:</dt><dd><ul class="simple">
+<li><p>Buoyancy with a linear entry ramp near the surface (dumping_hack).</p></li>
+<li><p>Quadratic translational drag: −½ρ Cp v|v|   (isotropic sphere model).</p></li>
+<li><p>Quadratic rotational drag:    −½ρ L Cr ω|ω| (isotropic sphere model).</p></li>
+<li><p>Added mass from displaced fluid volume (sphere approximation).</p></li>
+<li><p>Coriolis/centrifugal term: ω × (m v).</p></li>
+<li><p>Gyroscopic moment: −ω × (I ω).</p></li>
+</ul>
+</dd>
+<dt>Control abstractions supported:</dt><dd><ul class="simple">
+<li><p>‘cmd_motor_speeds’ : Direct thruster speed pass-through.</p></li>
+<li><p>‘cmd_vel’          : 3D velocity tracking    [vx, vy, vz].</p></li>
+<li><p>‘cmd_vel_yaw’      : 3D velocity + yaw offset [vx, vy, vz, yaw_deg].</p></li>
+<li><p>‘cmd_pos_yaw’      : 3D position + absolute yaw [x, y, z, yaw_deg].</p></li>
+</ul>
+</dd>
+<dt>Control architecture (all non-passthrough abstractions):</dt><dd><p>Velocity/Position P(D)  →  desired force F_des (body frame)
+Roll PID                →  desired roll moment M_roll
+Yaw PD                  →  desired yaw moment  M_yaw
+[F_des, M_roll, M_yaw]  →  TM_to_f (pseudo-inverse)  →  thruster forces
+Thruster forces         →  bidirectional motor speeds</p>
+</dd>
+<dt>Frame conventions (inherited from VehicleModel):</dt><dd><ul class="simple">
+<li><p>World frame : Z-up, right-handed (NWU).</p></li>
+<li><p>Body frame  : X-forward, Y-left, Z-up.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>int</em>) – Number of vehicles simulated in parallel.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Vehicle parameter dictionary.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Torch device string, e.g. ‘cpu’ or ‘cuda:0’.</p></li>
+<li><p><strong>control_abstraction</strong> (<em>str</em>) – One of the supported control abstraction keys.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.HexaCopterFiveDoF.get_cmd_motor_speeds" title="biguasim.dynamics.uuv.HexaCopterFiveDoF.get_cmd_motor_speeds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmd_motor_speeds</span></code></a>(state, control)</p></td>
-<td><p></p></td>
+<td><p>Converts a high-level control command into bidirectional thruster speed commands using a cascaded P(D) velocity/position controller with independent roll PID and yaw PD inner loops.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.HexaCopterFiveDoF.get_cmd_motor_speeds">
-<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.HexaCopterFiveDoF.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#biguasim.dynamics.uuv.HexaCopterFiveDoF.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
+<dd><p>Converts a high-level control command into bidirectional thruster speed
+commands using a cascaded P(D) velocity/position controller with
+independent roll PID and yaw PD inner loops.</p>
+<dl class="simple">
+<dt>All three non-passthrough abstractions share the same inner loop:</dt><dd><ol class="arabic simple">
+<li><p>Compute desired force F_des (body frame) from velocity or position error.</p></li>
+<li><p>Compute desired roll moment  M_roll via PID on roll rate.</p></li>
+<li><p>Compute desired yaw  moment  M_yaw  via PD  on yaw error.</p></li>
+<li><p>Assemble wrench [F_des, M_roll, 0, M_yaw] and map through TM_to_f.</p></li>
+<li><p>Convert thruster forces to bidirectional motor speeds:
+ω = sign(F) √(<a href="#id5"><span class="problematic" id="id6">|F|</span></a> / k_eta).</p></li>
+</ol>
+</dd>
+</dl>
+<p>The pitch channel is always zero in the wrench vector, consistent with
+the 5-DOF design and the gen_moments mask applied in _compute_external_forces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>dict</em>) – Structured state dict {x, v, q, w} from VehicleModel.map_states.</p></li>
+<li><p><strong>control</strong> (<em>dict</em>) – Control command dict with key ‘cmd_ctrl’ (B, D).
+D = 3 for cmd_vel, D = 4 for cmd_vel_yaw / cmd_pos_yaw.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Thruster speed commands (B, 6), signed rad/s.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -252,18 +411,113 @@
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.OctaCopterSixDoF">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.uuv.</span></span><span class="sig-name descname"><span class="pre">OctaCopterSixDoF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.OctaCopterSixDoF" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#biguasim.dynamics.uuv.HexaCopterFiveDoF" title="biguasim.dynamics.uuv.HexaCopterFiveDoF"><code class="xref py py-class docutils literal notranslate"><span class="pre">HexaCopterFiveDoF</span></code></a></p>
+<p>Fully actuated 6-DOF underwater vehicle model with 8 thrusters arranged
+in two functional groups:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>4 vertical thrusters (indices 0–3): produce Z-axis thrust and
+roll/pitch moments via differential thrust.</p></li>
+<li><p>4 horizontal thrusters (indices 4–7): oriented at ±45° in the XY
+body plane, producing surge (X), sway (Y), and yaw (Mz) forces.</p></li>
+</ul>
+</div></blockquote>
+<p>Extends HexaCopterFiveDoF by adding full roll and pitch moment authority
+through the vertical thruster group, upgrading the vehicle from 5-DOF
+to 6-DOF control.</p>
+<p>All thrusters are bidirectional — motor speed commands carry sign
+(positive = one spin direction, negative = the other), and thrust
+is proportional to ω|ω| = ω² sign(ω).</p>
+<dl>
+<dt>Control abstractions supported:</dt><dd><ul class="simple">
+<li><p>‘cmd_motor_speeds’ : Direct thruster speed pass-through.</p></li>
+<li><dl class="simple">
+<dt>‘cmd_vel’<span class="classifier">3D velocity tracking [vx, vy, vz]</span></dt><dd><p>with heading-hold yaw stabilization.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘cmd_vel_yaw’<span class="classifier">3D velocity + relative yaw offset</span></dt><dd><p>[vx, vy, vz, yaw_deg].</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘cmd_pos_yaw’<span class="classifier">3D position + absolute yaw</span></dt><dd><p>[x, y, z, yaw_deg].</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Control architecture:</dt><dd><p>(optional) Position P  →  Velocity P  →  Desired force F_des
+F_des  →  Wrench [F, M]  →  TM_to_f (allocation)</p>
+<blockquote>
+<div><p>→  Thruster forces  →  Motor speeds</p>
+</div></blockquote>
+</dd>
+<dt>Attitude stabilization:</dt><dd><p>Roll and pitch are stabilized by independent PID controllers acting
+on angular rate (w[:, 0] and w[:, 1] respectively). Yaw is controlled
+by a PD law on the yaw angle error and yaw rate.</p>
+</dd>
+<dt>Frame conventions (inherited from VehicleModel):</dt><dd><ul class="simple">
+<li><p>World frame : Z-up, right-handed.</p></li>
+<li><p>Body frame  : X-forward, Y-left, Z-up.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>int</em>) – Number of vehicles simulated in parallel.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Vehicle parameter dictionary.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Torch device string, e.g. ‘cpu’ or ‘cuda:0’.</p></li>
+<li><p><strong>control_abstraction</strong> (<em>str</em>) – One of the supported control abstraction keys above.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.OctaCopterSixDoF.get_cmd_motor_speeds" title="biguasim.dynamics.uuv.OctaCopterSixDoF.get_cmd_motor_speeds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmd_motor_speeds</span></code></a>(state, control)</p></td>
-<td><p></p></td>
+<td><p>Converts a high-level control command into thruster speed commands using a cascaded P-control architecture with independent attitude stabilization.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.OctaCopterSixDoF.get_cmd_motor_speeds">
-<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.OctaCopterSixDoF.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#biguasim.dynamics.uuv.OctaCopterSixDoF.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
+<dd><p>Converts a high-level control command into thruster speed commands using
+a cascaded P-control architecture with independent attitude stabilization.</p>
+<dl class="simple">
+<dt>All three non-passthrough abstractions share the same inner structure:</dt><dd><ol class="arabic simple">
+<li><p>Compute desired force F_des from velocity or position error.</p></li>
+<li><p>Stabilize roll and pitch via PID on angular rates w[:, 0], w[:, 1].</p></li>
+<li><p>Control yaw via PD on yaw angle error and yaw rate.</p></li>
+<li><p>Assemble wrench [F_des, M_des] and map through TM_to_f.</p></li>
+<li><p>Convert thruster forces to signed motor speeds:
+ω = sign(F) * √(<a href="#id7"><span class="problematic" id="id8">|F|</span></a> / k_eta).</p></li>
+</ol>
+</dd>
+<dt>Note on world→body rotation (cmd_vel and cmd_pos_yaw):</dt><dd><p>F_des is computed in the world frame. Before allocation it is rotated
+into the body frame via R_wb = Rᵀ (world→body), so that the horizontal
+thrusters produce the correct world-frame surge and sway forces
+regardless of the vehicle’s current heading.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>dict</em>) – Structured state dict {x, v, q, w} from VehicleModel.map_states.</p></li>
+<li><p><strong>control</strong> (<em>dict</em>) – Control command dict with key ‘cmd_ctrl’ (B, D).
+D = 3 for cmd_vel, D = 4 for cmd_vel_yaw / cmd_pos_yaw.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Thruster speed commands (B, 8), signed rad/s.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -271,35 +525,229 @@
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.TorpedoAUV">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.uuv.</span></span><span class="sig-name descname"><span class="pre">TorpedoAUV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.TorpedoAUV" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VehicleModel</span></code></p>
+<p>6-DOF torpedo-shaped Autonomous Underwater Vehicle (AUV) model.</p>
+<p>Models a slender, neutrally buoyant underwater vehicle propelled by a
+single stern propeller and steered by two pairs of control surfaces:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Rudders  (δ_rt, δ_rb): port/starboard tail fins — yaw control.</p></li>
+<li><p>Sternplanes (δ_sl, δ_sr): top/bottom tail fins  — depth/pitch control.</p></li>
+</ul>
+</div></blockquote>
+<p>All actuators are modeled with first-order lag dynamics (time constants
+T_delta for fins, T_n for the propeller), so commanded values are not
+applied instantaneously.</p>
+<dl class="simple">
+<dt>Hydrodynamics:</dt><dd><ul class="simple">
+<li><p>Rigid-body and added-mass Coriolis/centripetal matrices via m2c.</p></li>
+<li><p>Linear damping diagonal, with exponential velocity attenuation
+on surge and sway at low speeds.</p></li>
+<li><p>Body lift/drag from the hull (flat-plate approximation).</p></li>
+<li><p>Cross-flow drag via strip theory (BatchedParams.cross_flow_drag).</p></li>
+<li><p>Gravitational and buoyancy restoring forces/moments (_gvect).</p></li>
+<li><p>Propeller thrust and torque via an open-water diagram approximation
+(forward and reverse operating modes handled separately).</p></li>
+</ul>
+</dd>
+<dt>Ocean current:</dt><dd><p>A uniform horizontal current (V_c, β_c) is subtracted from the vehicle
+velocity to produce the relative velocity ν_r used in all hydrodynamic
+force computations.</p>
+</dd>
+<dt>Frame conventions:</dt><dd><ul class="simple">
+<li><p>Internal dynamics use the NED (North-East-Down) body frame.</p></li>
+<li><p>State input/output from VehicleModel uses NWU (North-West-Up).</p></li>
+<li><p>Conversion between frames is handled by tfrm.convert_NWU_to_NED
+and tfrm.convert_NED_to_NWU at the entry and exit of each step.</p></li>
+</ul>
+</dd>
+<dt>Control abstractions supported:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>‘cmd_rudders_sterns_motor_speed’:</dt><dd><p>Direct pass-through — [δ_rt, δ_rb, δ_sl, δ_sr, n] (rad, rad/s).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘cmd_depth_heading_rpm_surge’:</dt><dd><p>High-level autopilot — [z_ref, ψ_ref_deg, n_rpm, u_ref].
+Depth is controlled by a successive-loop PI (z → θ_d → δ_s).
+Heading is controlled by an integral sliding-mode controller (SMC)
+with a 3rd-order reference model (z → ψ_d → δ_r).
+Surge speed is controlled by a PID on forward velocity, or a
+direct RPM command when surge control is disabled.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>int</em>) – Number of vehicles simulated in parallel.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Vehicle parameter dictionary.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Torch device string, e.g. ‘cpu’ or ‘cuda:0’.</p></li>
+<li><p><strong>control_abstraction</strong> (<em>str</em>) – One of the supported control abstraction keys above.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.TorpedoAUV.get_cmd_motor_speeds" title="biguasim.dynamics.uuv.TorpedoAUV.get_cmd_motor_speeds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmd_motor_speeds</span></code></a>(state, control)</p></td>
-<td><p></p></td>
+<td><p>Converts a high-level control command into actuator commands [δ_rt, δ_rb, δ_sl, δ_sr, n] using the AUV's autopilot hierarchy.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.TorpedoAUV.integralSMC" title="biguasim.dynamics.uuv.TorpedoAUV.integralSMC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integralSMC</span></code></a>(e_int, e_x, e_v, x_d, v_d, a_d, ...)</p></td>
-<td><p>Integral Sliding Mode Controller (tensor-safe, batch-ready)</p></td>
+<td><p>Integral Sliding Mode Controller (ISMC) with a 3rd-order reference model.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.uuv.TorpedoAUV.ssa" title="biguasim.dynamics.uuv.TorpedoAUV.ssa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ssa</span></code></a>(angle)</p></td>
-<td><p>Smallest signed angle [-pi, pi)</p></td>
+<td><p>Smallest Signed Angle — wraps an angle to the half-open interval [-π, π).</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.TorpedoAUV.get_cmd_motor_speeds">
-<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.TorpedoAUV.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#biguasim.dynamics.uuv.TorpedoAUV.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
+<dd><p>Converts a high-level control command into actuator commands
+[δ_rt, δ_rb, δ_sl, δ_sr, n] using the AUV’s autopilot hierarchy.</p>
+<dl class="simple">
+<dt>Entry point responsibilities:</dt><dd><ol class="arabic simple">
+<li><p>Convert NWU state to NED pose η and velocity ν for all
+autopilot computations (tfrm.convert_NWU_to_NED).</p></li>
+<li><p>Lazily initialize u_actual to zeros on first call.</p></li>
+<li><p>Dispatch to the appropriate control abstraction.</p></li>
+</ol>
+</dd>
+</dl>
+<p>Control abstractions:</p>
+<dl>
+<dt>‘cmd_rudders_sterns_motor_speed’:</dt><dd><p>Pass-through — returns raw [δ_rt, δ_rb, δ_sl, δ_sr, n] commands
+directly from control[‘cmd_ctrl’], bypassing all autopilot logic.</p>
+</dd>
+<dt>‘cmd_depth_heading_rpm_surge’:</dt><dd><p>Simultaneous depth, heading, and speed autopilot.
+Input: [z_ref (m), ψ_ref (deg), n_rpm, u_ref (m/s)]</p>
+<p>If both n_rpm and u_ref are zero, returns zero commands (vehicle stopped).</p>
+<dl>
+<dt>Surge control (when u_ref &gt; 0):</dt><dd><p>PID on forward velocity error (u − u_ref).
+n = Kp_surge * e + Ki_surge * ∫e + Kd_surge * ė
+Integrated and clamped to ±nMax RPM.</p>
+</dd>
+<dt>Surge open-loop (when u_ref = 0):</dt><dd><p>n = n_rpm directly.</p>
+</dd>
+<dt>Depth autopilot (successive loop closure):</dt><dd><p>Step 1: LP filter z_ref → z_d with bandwidth wn_d_z.
+Step 2: PI on depth error → desired pitch θ_d:</p>
+<blockquote>
+<div><p>θ_d = Kp_z * [(z − z_d) + (1/T_z) * ∫(z − z_d)]
+Saturated to ±theta_max.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Step 3: PID on pitch error → sternplane deflection δ_s:</dt><dd><p>δ_s = −Kp_θ ssa(θ−θ_d) − Kd_θ q − Ki_θ ∫(θ−θ_d) − K_w w</p>
+</dd>
+</dl>
+</dd>
+<dt>Heading autopilot (integral SMC):</dt><dd><p>Integral SMC with 3rd-order reference model (see integralSMC).
+Drives ψ → ψ_ref via rudder deflection δ_r.
+Reference model state (ψ_d, ṙ_d, r̈_d) persists between steps.</p>
+</dd>
+<dt>Final command assembly:</dt><dd><p>δ_rt = δ_rb = δ_r   (symmetric rudder pair)
+δ_sl = δ_sr = δ_s   (symmetric sternplane pair)
+Output: [δ_rt, δ_rb, δ_sl, δ_sr, n]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>dict</em>) – Structured state dict {x, v, q, w} from VehicleModel.map_states.</p></li>
+<li><p><strong>control</strong> (<em>dict</em>) – Control command dict with key ‘cmd_ctrl’ (B, D).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Actuator commands (B, 5): [δ_rt, δ_rb, δ_sl, δ_sr, n].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.TorpedoAUV.integralSMC">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">integralSMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_int</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_nomoto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_nomoto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wn_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampleTime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.TorpedoAUV.integralSMC" title="Link to this definition"></a></dt>
-<dd><p>Integral Sliding Mode Controller (tensor-safe, batch-ready)</p>
+<dd><p>Integral Sliding Mode Controller (ISMC) with a 3rd-order reference model.</p>
+<p>Designed for heading (yaw) autopilot of a vessel whose yaw dynamics
+are approximated by Nomoto’s first-order model:</p>
+<blockquote>
+<div><p>T_nomoto * ṙ + r = K_nomoto * δ</p>
+</div></blockquote>
+<p>The controller drives the yaw angle error e_x = ψ − ψ_d to zero while
+using an integral term e_int to eliminate steady-state offset.</p>
+<dl>
+<dt>Sliding surface:</dt><dd><p>σ = ė_x + 2λ e_x + λ² e_int</p>
+</dd>
+<dt>Control law (smooth inside boundary layer, sign outside):</dt><dd><p>δ = [T_nomoto * v̇_r + v_r − K_d σ − K_σ sat(σ/φ_b)] / K_nomoto</p>
+<dl class="simple">
+<dt>where  v_r  = v_d − 2λ e_x − λ² e_int    (reference velocity)</dt><dd><p>v̇_r  = a_d − 2λ ė_x − λ² e_x     (reference acceleration)
+sat(·) = σ/φ_b  if <a href="#id9"><span class="problematic" id="id10">|σ/φ_b|</span></a> ≤ 1,   sign(σ) otherwise</p>
+</dd>
+</dl>
+</dd>
+<dt>Reference model (3rd-order, inner function refModel3):</dt><dd><p>Generates smooth desired trajectories (x_d, v_d, a_d) from a
+step reference r, with natural frequency wn_d and damping zeta_d.
+Desired velocity is clamped to ±v_max for safety.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_int</strong> – Integral of yaw error (B,).</p></li>
+<li><p><strong>e_x</strong> – Yaw angle error ψ − ψ_d (B,).</p></li>
+<li><p><strong>e_v</strong> – Yaw rate error r − r_d (B,).</p></li>
+<li><p><strong>x_d</strong> – Current desired yaw angle from reference model.</p></li>
+<li><p><strong>v_d</strong> – Current desired yaw rate from reference model.</p></li>
+<li><p><strong>a_d</strong> – Current desired yaw acceleration from reference model.</p></li>
+<li><p><strong>T_nomoto</strong> – Nomoto time constant (B,).</p></li>
+<li><p><strong>K_nomoto</strong> – Nomoto gain (B,).</p></li>
+<li><p><strong>wn_d</strong> – Reference model natural frequency (rad/s).</p></li>
+<li><p><strong>zeta_d</strong> – Reference model damping ratio.</p></li>
+<li><p><strong>K_d</strong> – SMC damping gain on σ.</p></li>
+<li><p><strong>K_sigma</strong> – SMC switching/smoothing gain on sat(σ/φ_b).</p></li>
+<li><p><strong>lam</strong> – Sliding surface pole location λ &gt; 0.</p></li>
+<li><p><strong>phi_b</strong> – Boundary layer thickness φ_b &gt; 0.</p></li>
+<li><p><strong>r</strong> – Step reference (desired heading) (B,).</p></li>
+<li><p><strong>v_max</strong> – Maximum allowed desired yaw rate (rad/s).</p></li>
+<li><p><strong>sampleTime</strong> – Integration timestep (s).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>delta    : Rudder deflection command (B,) in radians.
+e_int    : Updated integral error state.
+x_d      : Updated desired position from reference model.
+v_d      : Updated desired velocity from reference model.
+a_d      : Updated desired acceleration from reference model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.uuv.TorpedoAUV.ssa">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ssa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.uuv.TorpedoAUV.ssa" title="Link to this definition"></a></dt>
-<dd><p>Smallest signed angle [-pi, pi)</p>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ssa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#biguasim.dynamics.uuv.TorpedoAUV.ssa" title="Link to this definition"></a></dt>
+<dd><p>Smallest Signed Angle — wraps an angle to the half-open interval [-π, π).</p>
+<p>Used throughout the control loops to compute minimal angular errors
+without sign discontinuities at ±π.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>angle</strong> – Scalar or tensor angle in radians.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Angle wrapped to [-π, π).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -311,10 +759,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.usv.Catamaran" title="biguasim.dynamics.usv.Catamaran"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Catamaran</span></code></a>(batch_size, params, device, ...)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.dynamics.usv.Differential" title="biguasim.dynamics.usv.Differential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Differential</span></code></a>(batch_size, params, device, ...)</p></td>
-<td><p></p></td>
+<td><p>Surface vessel model for a catamaran hull with 2 differential thrusters.</p></td>
 </tr>
 </tbody>
 </table>
@@ -322,37 +767,110 @@
 <dt class="sig sig-object py" id="biguasim.dynamics.usv.Catamaran">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.usv.</span></span><span class="sig-name descname"><span class="pre">Catamaran</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.usv.Catamaran" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VehicleModel</span></code></p>
+<p>Surface vessel model for a catamaran hull with 2 differential thrusters.</p>
+<p>Models a twin-hull surface vessel that operates at the water surface.
+Propulsion is provided by two bidirectional thrusters mounted along the
+surge axis; differential thrust between them produces yaw moments,
+making this a 2-DOF actuated vehicle (surge + yaw).</p>
+<p>The vehicle is constrained to the water surface — sway, heave, roll, and
+pitch are not actively controlled, though their dynamics are modeled via
+hydrodynamic drag and buoyancy restoring forces.</p>
+<dl class="simple">
+<dt>Thruster layout (body frame):</dt><dd><p>Thruster 0 (r1): port   — positive speed = forward thrust
+Thruster 1 (r2): starboard — positive speed = forward thrust
+Differential (T0 − T1) → yaw moment Mz</p>
+</dd>
+<dt>Buoyancy model:</dt><dd><p>A sigmoid-ramp damping factor scales the buoyancy force from zero
+(above the waterline) to a maximum proportional to hull submersion
+depth. The dumping_hack multiplier is reduced to 0.5 when both
+thrusters are active, reflecting the reduced effective buoyancy
+under dynamic operation.</p>
+</dd>
+<dt>Drag model:</dt><dd><p>Quadratic translational drag: D = −½ρ Cp v|v|
+Quadratic rotational  drag:   M = −½ρ L Cr ω|ω|
+Coefficients based on Hoerner (1965), pg. 60, Cd = 0.38.</p>
+</dd>
+<dt>Frame conventions (inherited from VehicleModel):</dt><dd><ul class="simple">
+<li><p>World frame : Z-up, right-handed.</p></li>
+<li><p>Body frame  : X-forward, Y-left, Z-up.</p></li>
+</ul>
+</dd>
+<dt>Control abstractions supported:</dt><dd><ul class="simple">
+<li><p>‘cmd_motor_speeds’ : Direct thruster speed pass-through.</p></li>
+<li><dl class="simple">
+<dt>‘cmd_vel’<span class="classifier">Surge velocity tracking [vx, vy, vz]</span></dt><dd><p>(only vx is controlled; vy, vz are zeroed).</p>
+</dd>
+</dl>
+</li>
+<li><p>‘cmd_vel_yaw’      : Surge velocity + relative yaw offset [vx, _, _, yaw_deg].</p></li>
+<li><dl class="simple">
+<dt>‘cmd_pos_yaw’<span class="classifier">2D position tracking; yaw is steered toward</span></dt><dd><p>the bearing to the goal [x, y, z, _].</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>int</em>) – Number of vehicles simulated in parallel.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Vehicle parameter dictionary.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Torch device string, e.g. ‘cpu’ or ‘cuda:0’.</p></li>
+<li><p><strong>control_abstraction</strong> (<em>str</em>) – One of the supported control abstraction keys above.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.usv.Catamaran.get_cmd_motor_speeds" title="biguasim.dynamics.usv.Catamaran.get_cmd_motor_speeds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmd_motor_speeds</span></code></a>(state, control)</p></td>
-<td><p></p></td>
+<td><p>Converts a high-level control command into thruster speed commands using a cascaded P-control architecture for surge and yaw.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="biguasim.dynamics.usv.Catamaran.get_cmd_motor_speeds">
-<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.usv.Catamaran.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#biguasim.dynamics.usv.Catamaran.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
+<dd><p>Converts a high-level control command into thruster speed commands
+using a cascaded P-control architecture for surge and yaw.</p>
+<dl class="simple">
+<dt>All three non-passthrough abstractions share the same inner structure:</dt><dd><ol class="arabic simple">
+<li><p>Compute desired surge force F_des from a velocity error
+(optionally preceded by a position → velocity outer loop).</p></li>
+<li><p>Compute desired yaw moment M_yaw from a yaw angle PD law.</p></li>
+<li><p>Assemble wrench [F_des, M_des] and map through TM_to_f.</p></li>
+<li><p>Convert thruster forces to signed motor speeds:
+ω = sign(F) * √(<a href="#id11"><span class="problematic" id="id12">|F|</span></a> / k_eta).</p></li>
+</ol>
+</dd>
+<dt>Surge-only constraint:</dt><dd><p>This vehicle can only actuate surge (X) and yaw (Mz).
+Sway, heave, roll and pitch commands are zeroed before
+force computation to prevent spurious allocation outputs.</p>
+</dd>
+<dt>cmd_pos_yaw bearing computation:</dt><dd><p>The desired yaw is not taken from the goal vector but is
+computed as the geometric bearing to the goal position:
+ψ_des = atan2(y_goal − y, x_goal − x).
+This steers the vehicle toward the target rather than
+commanding an absolute world heading.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>dict</em>) – Structured state dict {x, v, q, w} from VehicleModel.map_states.</p></li>
+<li><p><strong>control</strong> (<em>dict</em>) – Control command dict with key ‘cmd_ctrl’ (B, D).
+D = 3 for cmd_vel, D = 4 for cmd_vel_yaw / cmd_pos_yaw.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Thruster speed commands (B, 2), signed rad/s.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
 </dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biguasim.dynamics.usv.Differential">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.usv.</span></span><span class="sig-name descname"><span class="pre">Differential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.usv.Differential" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VehicleModel</span></code></p>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.usv.Differential.get_cmd_motor_speeds" title="biguasim.dynamics.usv.Differential.get_cmd_motor_speeds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmd_motor_speeds</span></code></a>(state, control)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="biguasim.dynamics.usv.Differential.get_cmd_motor_speeds">
-<span class="sig-name descname"><span class="pre">get_cmd_motor_speeds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.usv.Differential.get_cmd_motor_speeds" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -374,10 +892,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.DjiMatrice" title="biguasim.dynamics.agents.DjiMatrice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DjiMatrice</span></code></a>([batch_size, device, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.ModelsFactory" title="biguasim.dynamics.agents.ModelsFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelsFactory</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.Hydrone" title="biguasim.dynamics.agents.Hydrone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hydrone</span></code></a>([batch_size, device, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.Torpedo" title="biguasim.dynamics.agents.Torpedo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Torpedo</span></code></a>([batch_size, device, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.ModelsFactory" title="biguasim.dynamics.agents.ModelsFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelsFactory</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.TorpedoAUV" title="biguasim.dynamics.agents.TorpedoAUV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a>([batch_size, device, ...])</p></td>
@@ -462,6 +980,25 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="biguasim.dynamics.agents.Hydrone">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.agents.</span></span><span class="sig-name descname"><span class="pre">Hydrone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cmd_motor_speeds'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.agents.Hydrone" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OctaCopterFourAirFourWaterCross</span></code></p>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.Hydrone.params" title="biguasim.dynamics.agents.Hydrone.params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.dynamics.agents.Hydrone.params">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#biguasim.dynamics.agents.Hydrone.params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="biguasim.dynamics.agents.ModelsFactory">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.agents.</span></span><span class="sig-name descname"><span class="pre">ModelsFactory</span></span><a class="headerlink" href="#biguasim.dynamics.agents.ModelsFactory" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -481,27 +1018,8 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="biguasim.dynamics.agents.Torpedo">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.agents.</span></span><span class="sig-name descname"><span class="pre">Torpedo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cmd_motor_speeds'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.agents.Torpedo" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#biguasim.dynamics.uuv.TorpedoAUV" title="biguasim.dynamics.uuv.TorpedoAUV"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a></p>
-<p><strong>Attributes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.dynamics.agents.Torpedo.params" title="biguasim.dynamics.agents.Torpedo.params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py property">
-<dt class="sig sig-object py" id="biguasim.dynamics.agents.Torpedo.params">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#biguasim.dynamics.agents.Torpedo.params" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="biguasim.dynamics.agents.TorpedoAUV">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.agents.</span></span><span class="sig-name descname"><span class="pre">TorpedoAUV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cmd_motor_speeds'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.agents.TorpedoAUV" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.dynamics.agents.</span></span><span class="sig-name descname"><span class="pre">TorpedoAUV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_abstraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cmd_rudders_sterns_motor_speed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.dynamics.agents.TorpedoAUV" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#biguasim.dynamics.uuv.TorpedoAUV" title="biguasim.dynamics.uuv.TorpedoAUV"><code class="xref py py-class docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a></p>
 <p><strong>Attributes:</strong></p>
 <table class="autosummary longtable docutils align-default">

@@ -12,6 +12,9 @@ class BatchedPIDController:
         self.previous_error = torch.zeros(batch_shape, device=device)
         self.integral = torch.zeros(batch_shape, device=device)
         self.setpoints = torch.zeros(batch_shape, device=device)
+        # The first compute() takes its error as the previous one: starting from 0, the derivative of a first error
+        # e was e / dt (a 45 deg yaw error gave ~2.8 N*m on the Hydrone, 184 rad/s^2, in one tick).
+        self._primed = False
 
     def update_setpoints(self, new_setpoints : Tensor, mask = None):
         """Update setpoints for the batch (shape: batch_size)."""
@@ -32,12 +35,16 @@ class BatchedPIDController:
         I_out = self.Ki * self.integral[idx]
 
         # Derivative
+        if not self._primed:
+            self.previous_error = error.clone()
+            self._primed = True
         derivative = (error[idx] - self.previous_error[idx]) / dt
         D_out = self.Kd * derivative[idx]
 
         # Update states
         self.previous_error = error.clone()
 
-        return P_out + I_out + D_out
+        out = P_out + I_out + D_out
+        return torch.nan_to_num(out, nan=0.0, posinf=0.0, neginf=0.0)
         # return P_out + D_out
     

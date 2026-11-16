@@ -175,6 +175,19 @@ void AP_Motors6DOF::setup_motors(motor_frame_class frame_class, motor_frame_type
         add_motor_raw_6dof(AP_MOTORS_MOT_6,     -1.0f,          0,              0,              -1.0f,              0,                  0,              6);
         break;
 
+    case SUB_FRAME_TORPEDO:
+        // Torpedo AUV: a stern propeller and four fins, each driven like a bidirectional motor. Fins only act with
+        // the vehicle moving, and there is no roll, sway or heave actuator: depth is held by pitching (the climb
+        // demand raises the stern planes like the pitch demand does).
+        _frame_class_string = "TORPEDO";
+        //                                          Roll  Pitch  Yaw   Climb  Forward  Lateral
+        add_motor_raw_6dof(AP_MOTORS_MOT_1,     0,    0,     0,    0,     1.0f,    0,      1);   // propeller
+        add_motor_raw_6dof(AP_MOTORS_MOT_2,     0,    0,     1.0f, 0,     0,       0,      2);   // top rudder
+        add_motor_raw_6dof(AP_MOTORS_MOT_3,     0,    0,     1.0f, 0,     0,       0,      3);   // bottom rudder
+        add_motor_raw_6dof(AP_MOTORS_MOT_4,     0,    1.0f,  0,    1.0f,  0,       0,      4);   // left stern plane
+        add_motor_raw_6dof(AP_MOTORS_MOT_5,     0,    1.0f,  0,    1.0f,  0,       0,      5);   // right stern plane
+        break;
+
     case SUB_FRAME_CUSTOM:
         // Put your custom motor setup here
         //break;

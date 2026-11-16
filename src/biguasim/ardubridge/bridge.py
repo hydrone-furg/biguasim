@@ -1,9 +1,12 @@
 """
 ArduPilot JSON SITL UDP bridge — vehicle-agnostic protocol handler.
 
-Receives 40-byte servo packets from ArduPilot, converts PWM to simulator
-commands, converts simulator state to ArduPilot JSON, and sends it back.
-No BiguaSim dependency; wired to the environment by ArduBiguaSimRunner.
+Receives servo packets from ArduPilot (16 or 32 channels), converts PWM to simulator commands, converts the
+simulator state to ArduPilot JSON, and sends it back. No BiguaSim dependency; wired to the environment by
+ArduBiguaSimRunner.
+
+ArduPilot runs in lockstep with the physics: it sends one servo packet per physics step and waits for the state.
+The bridge answers every packet with exactly one state, so the simulator must advance one step per packet.
 """
 
 from __future__ import annotations
@@ -15,24 +18,20 @@ from typing import Optional
 
 import numpy as np
 
-from .frame import (
-    depth_to_pressure,
-    imu_glu_to_frd,
-    pos_nwu_to_ap,
-    quat_glu2nwu_to_frd2ned,
-    vel_nwu_to_ned,
-)
+from .frame import imu_from_dynamics, pos_nwu_to_ned, quat_glu2nwu_to_frd2ned, vel_nwu_to_ned
 from .vehicle import VehicleProfile
 
-_SERVO_PACKET_FMT = "<HHI16H"
-_SERVO_PACKET_SIZE = struct.calcsize(_SERVO_PACKET_FMT)  # 40 bytes
-_SERVO_MAGIC = 18458
+_PACKETS = {   # magic → (struct format, size)
+    18458: ("<HHI16H", struct.calcsize("<HHI16H")),   # 40 bytes
+    29569: ("<HHI32H", struct.calcsize("<HHI32H")),   # 72 bytes (SERVO_32_ENABLE)
+}
+_MAX_PACKET = max(size for _, size in _PACKETS.values())
 
 
 class ArduPilotBridge:
     """
     UDP bridge implementing the ArduPilot JSON SITL FDM protocol.
-    
+
     Responsible for establishing two-way communication between ArduPilot and the simulator,
     receiving actuator commands (PWM) and sending the vehicle's sensory data (state) back.
     """
@@ -42,9 +41,8 @@ class ArduPilotBridge:
         profile: VehicleProfile,
         address: str = "127.0.0.1",
         port: int = 9002,
-        gps_origin: tuple = (33.810313, -118.393867),
+        origin: tuple = (0.0, 0.0, 0.0),
     ):
-        
         """
         Initializes the UDP communication bridge.
 
@@ -52,26 +50,25 @@ class ArduPilotBridge:
         :type profile: VehicleProfile
         :param address: Local IP address to bind the UDP socket. Defaults to "127.0.0.1".
         :type address: str
-        :param port: Local port to listen for ArduPilot packets. Defaults to 9002.
+        :param port: Local port to listen for ArduPilot packets. Defaults to 9002 (SITL instance 0).
         :type port: int
-        :param gps_origin: Tuple containing the (Latitude, Longitude) of the simulator's world origin.
-        :type gps_origin: tuple
+        :param origin: World point (x, y, z in m) that stands for ArduPilot's home. Its height is the water surface
+            for ArduSub, whose barometer reads the depth below home.
+        :type origin: tuple
         """
 
         self._profile = profile
         self._address = address
         self._port = port
-        self._gps_origin = gps_origin
+        self._origin = tuple(float(v) for v in origin)
 
-        self._fcu_address: Optional[str] = None
-        self._fcu_port: Optional[int] = None
+        self._fcu_address: Optional[tuple] = None
         self._online = False
-        self._timeout_count = 0
         self._last_frame = -1
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._recv_buf = bytearray(_SERVO_PACKET_SIZE)  # pre-allocated; avoid hot-loop GC
+        self._recv_buf = bytearray(_MAX_PACKET)  # pre-allocated; avoid hot-loop GC
 
     # ------------------------------------------------------------------
     # Public interface
@@ -79,115 +76,91 @@ class ArduPilotBridge:
 
     def bind(self) -> None:
         """
-        Binds the UDP socket and drains any stale packets. 
-        
-        .. warning::
-           Call this method only once before starting the execution loop (`run`).
+        Binds the UDP socket and drains any stale packets.
 
         :raises RuntimeError: If it fails to bind to the specified UDP socket.
         """
         try:
             self._sock.bind((self._address, self._port))
-            print(f"ArduPilot bridge bound @ {self._address}:{self._port}")
         except socket.error as exc:
-            raise RuntimeError(f"Failed to bind UDP socket: {exc}") from exc
+            raise RuntimeError(f"Failed to bind UDP socket {self._address}:{self._port}: {exc}") from exc
         self._drain_stale_packets()
-        print("Drained stale packets – waiting for ArduPilot...")
 
-    def receive_pwm(self) -> tuple:
+    def receive_pwm(self, timeout: float = 1.0) -> tuple:
         """
-        Non-blocking receive of one servo packet (PWM).
+        Waits for one servo packet.
 
-        Dynamically adjusts the timeout depending on the connection status (`_online`).
-
-        :returns: A tuple containing `(frame_count, pwm_array)`. Returns `(None, None)` on timeout or error.
+        :returns: ``(frame_count, pwm_array)``, or ``(None, None)`` on timeout or an invalid packet.
         :rtype: tuple
         """
-        self._sock.settimeout(0.001 if not self._online else 0.01)
+        self._sock.settimeout(timeout)
         try:
-            nbytes, (addr, port) = self._sock.recvfrom_into(self._recv_buf)
+            nbytes, addr = self._sock.recvfrom_into(self._recv_buf)
         except socket.timeout:
-            self._handle_timeout()
+            if self._online:
+                print("ArduPilot stopped sending servo packets.")
+                self._online = False
             return None, None
         except OSError:
             return None, None
 
-        if nbytes != _SERVO_PACKET_SIZE:
+        magic = struct.unpack_from("<H", self._recv_buf)[0] if nbytes >= 2 else None
+        if magic not in _PACKETS or nbytes != _PACKETS[magic][1]:
+            print(f"Ignoring a {nbytes}-byte packet with magic {magic}")
             return None, None
 
-        if self._fcu_address is None:
-            self._fcu_address, self._fcu_port = addr, port
-            print(f"ArduPilot connected @ {addr}:{port}")
+        if self._fcu_address != addr:
+            self._fcu_address = addr
+            print(f"ArduPilot connected @ {addr[0]}:{addr[1]}")
 
-        unpacked = struct.unpack_from(_SERVO_PACKET_FMT, self._recv_buf)
-        magic, _frame_rate, frame_count = unpacked[0], unpacked[1], unpacked[2]
+        unpacked = struct.unpack_from(_PACKETS[magic][0], self._recv_buf)
+        frame_count = unpacked[2]
         pwm = np.array(unpacked[3:], dtype=np.float32)
 
-        if magic != _SERVO_MAGIC:
-            print(f"Unexpected magic: {magic}")
-            return None, None
-
-        self._check_frame_continuity(frame_count)
-        if not self._online:
-            print("ArduPilot online")
-            self._online = True
-        self._timeout_count = 0
+        if frame_count < self._last_frame:
+            print("ArduPilot reset detected")
+        self._online = True
         self._last_frame = frame_count
         return frame_count, pwm
 
-    def pwm_to_motor_cmds(self, pwm: np.ndarray, frame_count: int) -> list:
+    def pwm_to_motor_cmds(self, pwm: np.ndarray) -> list:
         """
-        Converts raw PWM values received from ArduPilot into scaled motor commands for the simulator.
+        Converts the PWM values of one servo packet into the BiguaSim command of the vehicle.
 
-        Applies the warmup guard (`warmup_frames`), motor mapping, mathematical PWM converters, 
-        and directional signs configured in the `VehicleProfile`.
-
-        :param pwm: NumPy array containing the 16 PWM channels received from ArduPilot.
+        :param pwm: NumPy array containing the 16 (or 32) PWM channels received from ArduPilot.
         :type pwm: np.ndarray
-        :param frame_count: The current frame counter used to check the warmup phase.
-        :type frame_count: int
-        :returns: A list of floats containing the final normalized commands for each motor.
+        :returns: The command, one value per actuator of the vehicle's control abstraction.
         :rtype: list
         """
-        if frame_count < self._profile.warmup_frames:
-            return [0.0] * self._profile.num_motors
+        return self._profile.pwm_to_command(pwm)
 
-        return [
-            self._profile.motor_signs[i]
-            * self._profile.pwm_converters[i](pwm[self._profile.motor_mapping[i]])
-            for i in range(self._profile.num_motors)
-        ]
-
-    def build_json_state(self, agent_state: dict, sim_time: float) -> dict:
+    def build_json_state(self, dynamics, sim_time: float, rangefinders=None) -> dict:
         """
-        Converts the raw agent state in the simulator (NWU/GLU standard) to the ArduPilot 
-        JSON state format (NED/FRD standard).
+        Converts one DynamicsSensor vector (NWU world, UseRPY false) to the ArduPilot JSON state (NED/FRD).
 
-        :param agent_state: Dictionary containing BiguaSim sensor data (Location, Velocity, IMU, Depth, etc.).
-        :type agent_state: dict
+        :param dynamics: DynamicsSensor ``sensor_data`` (19 dynamics items, anything after them is ignored).
         :param sim_time: Current simulation time in seconds.
         :type sim_time: float
+        :param rangefinders: Optional distances (m) sent as ``rng_1``.. ``rng_6``.
         :returns: Formatted dictionary ready to be serialized into JSON.
         :rtype: dict
         """
-        accel, gyro = imu_glu_to_frd(agent_state["IMUSensor"])
-        pos = pos_nwu_to_ap(agent_state["LocationSensor"].tolist(), self._gps_origin)
-        vel = vel_nwu_to_ned(agent_state["VelocitySensor"].tolist())
-        quat = quat_glu2nwu_to_frd2ned(agent_state["DynamicsSensor"][-4:].tolist())
-
+        d = np.asarray(dynamics, dtype=np.float64).ravel()
+        if d.size < 19:
+            raise ValueError(f"Need a DynamicsSensor with UseRPY false (19 items), got {d.size} items")
+        if not np.all(np.isfinite(d[:19])):
+            # ArduPilot's SITL traps floating point exceptions: a NaN would abort the firmware
+            raise ValueError(f"Non-finite DynamicsSensor state at t={sim_time:.3f}: {np.round(d[:19], 4).tolist()}")
+        accel, gyro = imu_from_dynamics(d[0:3], d[12:15], d[15:19])
         state = {
-            "timestamp": sim_time,
+            "timestamp": float(sim_time),
             "imu": {"gyro": gyro, "accel_body": accel},
-            "position": pos,
-            "velocity": vel,
-            "quaternion": quat,
+            "position": pos_nwu_to_ned(d[6:9], self._origin),
+            "velocity": vel_nwu_to_ned(d[3:6]),
+            "quaternion": quat_glu2nwu_to_frd2ned(d[15:19]),
         }
-
-        if "DepthSensor" in agent_state:
-            depth_val = agent_state["DepthSensor"]
-            z_up = float(depth_val[0]) if hasattr(depth_val, "__len__") else float(depth_val)
-            state["pressure"] = depth_to_pressure(z_up)
-
+        for i, distance in enumerate(rangefinders or []):
+            state[f"rng_{i + 1}"] = float(distance)
         return state
 
     def send_state(self, json_state: dict) -> None:
@@ -200,7 +173,7 @@ class ArduPilotBridge:
         if self._fcu_address is None:
             return
         payload = ("\n" + json.dumps(json_state, separators=(",", ":")) + "\n").encode("utf-8")
-        self._sock.sendto(payload, (self._fcu_address, self._fcu_port))
+        self._sock.sendto(payload, self._fcu_address)
 
     @property
     def is_online(self) -> bool:
@@ -229,30 +202,7 @@ class ArduPilotBridge:
         self._sock.setblocking(False)
         try:
             while True:
-                self._sock.recvfrom(_SERVO_PACKET_SIZE)
-        except BlockingIOError:
+                self._sock.recvfrom(_MAX_PACKET)
+        except (BlockingIOError, socket.timeout):
             pass
         self._sock.setblocking(True)
-
-    def _handle_timeout(self) -> None:
-        """
-        Manages communication failures and handles timeout disconnections.
-        """
-        if self._online:
-            self._timeout_count += 1
-            if self._timeout_count > 5:
-                print("ArduPilot connection timeout — resetting.")
-                self._online = False
-                self._timeout_count = 0
-
-    def _check_frame_continuity(self, frame_count: int) -> None:
-        """
-        Checks the integrity of the received packet sequence (detects frame drops or FCU resets).
-
-        :param frame_count: The frame counter received in the current packet.
-        :type frame_count: int
-        """
-        if frame_count < self._last_frame:
-            print("ArduPilot reset detected")
-        elif self._last_frame >= 0 and frame_count > self._last_frame + 1:
-            print(f"Missed {frame_count - self._last_frame - 1} frame(s)")

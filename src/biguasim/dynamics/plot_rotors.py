@@ -4,14 +4,14 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Rotor positions in ENU (y, x, z)
 rotor_pos = {
-    'r1': np.array([0.22, 0.22, 0.08]),          # Rotor 1 position
-            'r2': np.array([0.22, -0.22, 0.08]),         # Rotor 2 position
-            'r3': np.array([-0.22, 0.22, 0.08]),         # Rotor 3 position
-            'r4': np.array([-0.22, -0.22, 0.08]),        # Rotor 4 position
-            'r5': np.array([0.156, 0.111, 0.045]),       # Rotor 5 position
-            'r6': np.array([0.156, -0.111, 0.045]),      # Rotor 6 position
-            'r7': np.array([-0.156, 0.111, 0.045]),      # Rotor 7 position
-            'r8': np.array([-0.156, -0.111, 0.045]),     # Rotor 8 position
+    'r1': np.array([0.25, 0, 0]),       # Rotor 1 position
+            'r2': np.array([0, -0.25, 0]),       # Rotor 2 position
+            'r3': np.array([-0.25, 0, 0]),      # Rotor 3 position
+            'r4': np.array([0, 0.25, 0]),      # Rotor 4 position
+            'r5': np.array([0.25, 0,  -0.03]),       # Rotor 1 position
+            'r6': np.array([0, -0.25, -0.03]),       # Rotor 2 position
+            'r7': np.array([-0.25, 0, -0.03]),      # Rotor 3 position
+            'r8': np.array([0, 0.25,  -0.03]),      # Rotor 4 position
             
 }
 
@@ -28,9 +28,9 @@ rotor_directions = np.array([[0, 0, 1],
                             [0, 0, 1],
                             [0, 0, 1],
                             [0, 0, 1],
-                            [np.cos(7*np.pi/4), np.sin(7*np.pi/4), 0],
+                            [0, 0, -1],
                             [np.cos(np.pi/4), np.sin(np.pi/4), 0],
-                            [np.cos(5*np.pi/4), np.sin(5*np.pi/4), 0],
+                            [0, 0, -1],
                             [np.cos(3*np.pi/4), np.sin(3*np.pi/4), 0]])
 
 # Convert direction vectors from (x, y, z) to (y, x, z)

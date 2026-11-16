@@ -549,7 +549,7 @@ void Aircraft::fill_fdm(struct sitl_fdm &fdm)
   as distance to obstacles - this takes effect for yaw-only
   orientations
  */
-#define SITL_RANGEFINDER_AS_OBJECT_SENSOR (APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_Rover))
+#define SITL_RANGEFINDER_AS_OBJECT_SENSOR (APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduHydrone) || APM_BUILD_TYPE(APM_BUILD_Rover))
 #define SITL_RANGEFINDER_IS_YAW_ONLY(orientation) (orientation <= ROTATION_YAW_315)
 
 // returns perpendicular height to surface rangefinder is bouncing off

@@ -1,5 +1,7 @@
 """Definition of all of the sensor information. The UE settings for sensors are such that the motion ticks happen before the sensor ticks."""
-import json
+import json, cv2, os
+import glob
+import warnings
 
 import numpy as np
 import biguasim
@@ -698,9 +700,24 @@ class DynamicsSensor(BiguaSimSensor):
 
     - ``UseCOM``: Whether to return data relative to the COM or the specified socket. Defaults to true.
     - ``UseRPY``: Whether to return orientation as roll, pitch, yaw, or as a quaternion. Defaults to true. When true, sensor returns an 18 vector, when false sensor returns as 19 vector. Quaternion is specified with scalar as last value ie x,y,z,w.
+    - ``ExportGeometry``: Whether the engine also sends the collision geometry of the agent's body, available
+      from :attr:`geometry`. It is written once, so it adds no per-tick cost. Defaults to false.
+    - ``GeometrySource``: ``"complex"`` for the exact collision mesh the engine collides with, or ``"simple"``
+      for its convex hulls and boxes. Defaults to ``"complex"``, falling back to simple when the mesh has none.
+    - ``GeometryMaxVertices`` / ``GeometryMaxTriangles``: Capacity of the geometry block. A larger mesh is not
+      sent, and :attr:`geometry` raises with the sizes it needs. Default to 16384 / 32768. Complex collision is
+      often the full render mesh (hundreds of thousands of triangles); every clone allocates this capacity.
+    - ``ExportWaterSurface``: Whether the engine also sends, every tick, the wave surface under the agent (see
+      :attr:`water_surface`). The water block is part of :attr:`sensor_data`, after the dynamics items, so the
+      dynamics models receive it in their state rows and use it as the water surface (instead of z = 0).
+      Defaults to true; without it the models fall back to a flat water level (no water for the UAV).
+    - ``WaterSurfaceGrid``: Samples per side of the grid over the agent's horizontal bounds. Defaults to 3.
     """
 
     sensor_type = "DynamicsSensor"
+
+    # Must match UDynamicsSensor::GEOMETRY_HEADER_SIZE and its header layout in the engine.
+    _GEOMETRY_HEADER_SIZE = 13
 
     def __init__(
         self, client, agent_name, agent_type, name="DynamicsSensor", config=None
@@ -708,12 +725,160 @@ class DynamicsSensor(BiguaSimSensor):
         self.config = {} if config is None else config
 
         use_rpy = self.config.get("UseRPY", True)
+        self._num_dynamics = 18 if use_rpy else 19
 
-        self.shape = [18] if use_rpy else [19]
+        self._export_water = self.config.get("ExportWaterSurface", True)
+        # Only the default (not asked for) is dropped when the engine predates the water block, see
+        # _check_engine_layout.
+        self._water_requested = "ExportWaterSurface" in self.config
+        water_grid = max(1, int(self.config.get("WaterSurfaceGrid", 3)))
+        # Must match UDynamicsSensor::WaterSurfaceSize: contact flag, then (x, y, z) per grid sample.
+        self._water_size = 1 + 3 * water_grid * water_grid if self._export_water else 0
+        self._geometry_offset = self._num_dynamics + self._water_size
+
+        self._export_geometry = self.config.get("ExportGeometry", False)
+        self._max_vertices = self.config.get("GeometryMaxVertices", 16384)
+        self._max_triangles = self.config.get("GeometryMaxTriangles", 32768)
+        geometry_size = (self._GEOMETRY_HEADER_SIZE + 3 * (self._max_vertices + self._max_triangles)
+                         if self._export_geometry else 0)
+        self.shape = [self._geometry_offset + geometry_size]
+        self._geometry = None
 
         super(DynamicsSensor, self).__init__(
             client, agent_name, agent_type, name=name, config=config
         )
+
+    @property
+    def sensor_data(self):
+        """The dynamics vector, followed by the water surface block if ``ExportWaterSurface`` (see
+        :attr:`water_surface`); the geometry block is exposed through :attr:`geometry`."""
+        if self._export_water:
+            self._check_engine_layout()
+        data = super().sensor_data
+        return None if data is None else data[:self._geometry_offset]
+
+    @property
+    def water_surface(self):
+        """Wave surface under the agent, written by the engine every tick, or ``None`` if not exported.
+
+        Returns:
+            :obj:`dict` or :obj:`None`: ``contact`` (:obj:`bool`, the bottom of the agent's bounds is below the
+            surface at some sample) and ``samples`` (``(N, 3)`` float64 array of world points ``(x, y, surface z)``
+            in meters, over a ``WaterSurfaceGrid`` x ``WaterSurfaceGrid`` grid spanning the agent's horizontal
+            bounds; ``z`` is NaN where no water body covers the point, and includes the waves).
+        """
+        if not self._export_water:
+            return None
+        self._check_engine_layout()
+        block = np.asarray(self._sensor_data_buffer[self._num_dynamics:self._geometry_offset], dtype=np.float64)
+        return {"contact": bool(block[0] > 0.5), "samples": block[1:].reshape(-1, 3)}
+
+    @property
+    def geometry(self):
+        """Collision geometry of the agent's body, or ``None`` if not exported or not yet written.
+
+        Everything is in the body frame of the agent's root component, in client units (meters,
+        right-handed), relative to the body origin:
+
+        - ``vertices``: ``(N, 3)`` float64 array.
+        - ``triangles``: ``(M, 3)`` int64 array of vertex indices. Faces of simple collision are wound
+          counter-clockwise seen from outside; for complex collision the winding is the mesh's own.
+        - ``center_of_mass``: ``(3,)`` center of mass relative to the body origin.
+        - ``mass``: mass in kg as simulated by the engine (0 if the body does not simulate physics).
+        - ``source``: ``"complex"`` or ``"simple"``.
+        - ``volume``, ``volume_centroid``, ``volume_source``: see :attr:`volume`. The volume comes from the
+          complex collision mesh whatever ``source`` is.
+
+        The engine writes the geometry on the first tick after the sensor is created.
+
+        Returns:
+            :obj:`dict` or :obj:`None`
+
+        Raises:
+            BiguaSimConfigurationException: If the body has no supported collision geometry, or its mesh
+                is larger than ``GeometryMaxVertices``/``GeometryMaxTriangles``.
+                Also if the engine is too old to export geometry (e.g. a world packaged before this feature).
+        """
+        if self._geometry is not None or not self._export_geometry:
+            return self._geometry
+
+        self._check_engine_layout()
+        header = self._sensor_data_buffer[self._geometry_offset:self._geometry_offset + self._GEOMETRY_HEADER_SIZE]
+        status = int(header[0])
+        if status == 0:
+            return None
+        if status < 0:
+            raise BiguaSimConfigurationException(
+                f"{self.agent_name}: the engine found no supported collision geometry to export.")
+        num_vertices, num_triangles = int(header[1]), int(header[2])
+        if status == 2:
+            raise BiguaSimConfigurationException(
+                f"{self.agent_name}: the collision mesh has {num_vertices} vertices and {num_triangles} "
+                f"triangles, above the configured {self._max_vertices}/{self._max_triangles}. Raise "
+                "GeometryMaxVertices/GeometryMaxTriangles, or use GeometrySource 'simple'.")
+
+        start = self._geometry_offset + self._GEOMETRY_HEADER_SIZE
+        vertices = self._sensor_data_buffer[start:start + 3 * num_vertices]
+        start += 3 * self._max_vertices
+        triangles = self._sensor_data_buffer[start:start + 3 * num_triangles]
+        self._geometry = {
+            "vertices": np.array(vertices, dtype=np.float64).reshape(-1, 3),
+            "triangles": np.array(triangles, dtype=np.int64).reshape(-1, 3),
+            "center_of_mass": np.array(header[4:7], dtype=np.float64),
+            "mass": float(header[7]),
+            "source": "complex" if int(header[3]) == 1 else "simple",
+            **self._volume_from(header),
+        }
+        return self._geometry
+
+    @property
+    def volume(self):
+        """Displaced volume of the agent's body, computed by the engine from its complex collision mesh.
+
+        Available even when the mesh itself is above the geometry capacity. Uses the simple collision only if
+        the body has no complex collision (``volume_source`` says which).
+
+        Returns:
+            :obj:`dict` with ``volume`` (m^3), ``volume_centroid`` (``(3,)``, body frame, meters) and
+            ``volume_source`` (``"complex"`` or ``"simple"``), or :obj:`None` if not exported or not written yet.
+        """
+        if not self._export_geometry:
+            return None
+        self._check_engine_layout()
+        header = self._sensor_data_buffer[self._geometry_offset:self._geometry_offset + self._GEOMETRY_HEADER_SIZE]
+        return self._volume_from(header) if int(header[0]) in (1, 2) else None
+
+    @staticmethod
+    def _volume_from(header):
+        return {
+            "volume": float(header[8]),
+            "volume_centroid": np.array(header[9:12], dtype=np.float64),
+            "volume_source": "complex" if int(header[12]) == 1 else "simple",
+        }
+
+    def _check_engine_layout(self):
+        """Raises if the engine sized the buffer for fewer items than the configured blocks (an older world):
+        reading past its size would crash with SIGBUS.
+
+        A world packaged before the water surface block sizes the buffer without it. If ExportWaterSurface was left
+        at its default, the block is then dropped with a warning (the dynamics models use a flat water level)
+        instead of failing every scenario on that world."""
+        expected = self._sensor_data_buffer.nbytes
+        mapped = self._client.mapped_size(self._key)
+        item_bytes = self._sensor_data_buffer.itemsize
+        if (mapped is not None and mapped < expected and self._export_water and not self._water_requested
+                and mapped == expected - self._water_size * item_bytes):
+            warnings.warn(f"{self.agent_name}: this world's DynamicsSensor has no water surface block (packaged "
+                          "before ExportWaterSurface); continuing without it. Repackage the world to get it.")
+            self._export_water = False
+            self._geometry_offset = self._num_dynamics
+            self._water_size = 0
+            expected = mapped
+        if mapped is not None and mapped < expected:
+            raise BiguaSimConfigurationException(
+                f"{self.agent_name}: the engine does not support this ExportGeometry/ExportWaterSurface layout (its "
+                f"DynamicsSensor buffer is {mapped} bytes, {expected} expected). Rebuild the engine and repackage "
+                "the world.")
 
     @property
     def dtype(self):
@@ -736,9 +901,88 @@ class CollisionSensor(BiguaSimSensor):
     @property
     def data_shape(self):
         return [1]
-    
 
-    
+
+class WaterCollisionSensor(BiguaSimSensor):
+    """Returns true while the agent is in contact with water: touching the wave surface or under it.
+
+    The water counterpart of :class:`CollisionSensor`: water only overlaps, so instead of a one-tick pulse on
+    impact the value holds for as long as the contact lasts.
+
+    **Configuration**
+
+    - ``ReportSurface``: Also return the wave surface under the agent. The output then becomes a float array:
+      ``[contact (0/1), x0, y0, z0, x1, y1, z1, ...]``, one ``(x, y, surface z)`` per sample in world
+      coordinates (meters), ``z`` being NaN where no water body covers the point. Defaults to false (a single
+      bool).
+    - ``SurfaceGrid``: Samples per side of the grid over the agent's horizontal bounds, used both for contact
+      and for the reported surface. Defaults to 3.
+    """
+
+    sensor_type = "WaterCollisionSensor"
+
+    def __init__(self, client, agent_name, agent_type, name="WaterCollisionSensor", config=None):
+        self.config = {} if config is None else config
+        self._report_surface = self.config.get("ReportSurface", False)
+        grid = self.config.get("SurfaceGrid", 3)
+        self._shape = [1 + 3 * grid * grid] if self._report_surface else [1]
+        super().__init__(client, agent_name, agent_type, name=name, config=config)
+
+    @property
+    def dtype(self):
+        return np.float32 if self._report_surface else np.bool_
+
+    @property
+    def data_shape(self):
+        return self._shape
+
+
+class CoverageSensor(BiguaSimSensor):
+    """How much of a target's surface another sensor on the same agent has seen.
+
+    The engine spreads ``NumPoints`` points over the target's collision surface (area-weighted) and marks a point
+    as viewed once it is inside the observing sensor's field of view, faces it (the side of the surface it lies
+    on looks towards the sensor) and nothing blocks the line of sight. Viewed points stay viewed until
+    :meth:`~biguasim.environments.BiguaSimEnvironment.reset`. All of it runs in the engine.
+
+    Returns ``[viewed, not_viewed]`` point counts (uint32); see :meth:`coverage`.
+
+    **Configuration**
+
+    - ``Target``: Name of the target: a prop spawned with that name, else the actors tagged with it, else the
+      actor with that object name. Required.
+    - ``Sensor``: Name of the sensor on this agent whose view is followed: a camera (``RGBCamera``,
+      ``DepthCamera``, ``FOVDetection``, ...), a sonar or a lidar. Its field of view is read from its own
+      configuration. Required.
+    - ``NumPoints``: Points spread over the surface. Defaults to 1000.
+    - ``Debug``: Draw the points in the world, red not viewed yet and green viewed. Debug draws also show in
+      camera images. Defaults to false.
+    - ``DebugPointSize``: Size of the debug points in pixels. Defaults to 8.
+    - ``MinRange`` / ``MaxRange``: Extra range limits in meters on top of the sensor's own (cameras have none).
+      ``MaxRange`` 0 means no extra limit. Default 0.
+    - ``SurfaceOffset``: The line of sight ends this far above the surface (meters), so it does not hit the
+      point's own face; also the thinnest wall told apart. Defaults to 0.01.
+    - ``Seed``: Seed of the point placement. Defaults to 0.
+    """
+
+    sensor_type = "CoverageSensor"
+
+    @property
+    def dtype(self):
+        return np.uint32
+
+    @property
+    def data_shape(self):
+        return [2]
+
+    @staticmethod
+    def coverage(sensor_data):
+        """Fraction of the points viewed, from a reading of this sensor (0 before the target is found)."""
+        viewed, not_viewed = int(sensor_data[0]), int(sensor_data[1])
+        total = viewed + not_viewed
+        return viewed / total if total > 0 else 0.0
+
+
 class RangeFinderSensor(BiguaSimSensor):
     """Returns distances to nearest collisions in the directions specified by
     the parameters. For example, if an agent had two range sensors at different
@@ -995,10 +1239,14 @@ class ImagingSonar(BiguaSimSensor):
         max_range = self.config.get("RangeMax", 10)
         azimuth = self.config.get("Azimuth", 120)
 
+        # The engine's defaults for these are True, the client's False: send them explicitly, or a partial set
+        # (e.g. only SendGTPointCloud) makes the engine write channels this parser does not expect.
+        for flag in ("SendGTIntensity", "SendGTElevation", "SendGTPointCloud"):
+            self.config.setdefault(flag, False)
         channels = 1
-        if self.config.get("SendGTIntensity", False): channels += 1
-        if self.config.get("SendGTElevation", False): channels += 1
-        if self.config.get("SendGTPointCloud", False): channels += 3
+        if self.config["SendGTIntensity"]: channels += 1
+        if self.config["SendGTElevation"]: channels += 1
+        if self.config["SendGTPointCloud"]: channels += 3
 
         if "RangeBins" in self.config and "RangeRes" in self.config:
             raise ValueError(
@@ -2229,6 +2477,293 @@ class AnnotationComponent(BiguaSimSensor):
         self._client.command_center.enqueue_command(command_to_send)
         self.tick_every = ticks_per_capture
 
+class IRCamera(BiguaSimSensor):
+    """
+    Captures the agent's vision in Infrared (Thermal).
+    
+    Thermal physics (based on Planck's Law) are calculated automatically 
+    during initialization using a predefined material temperature palette.
+    The output is a heat map image applying the OpenCV JET colormap.
+    """
+    sensor_type = "IRCamera"
+
+    def __init__(self, client, agent_name, agent_type, name="IRCamera", config=None):
+        """
+        Initializes the IR Camera sensor.
+        
+        Args:
+            client: The BiguaSim client connection.
+            agent_name (str): The name of the agent holding the sensor.
+            agent_type (str): The type of the agent.
+            name (str): The name of this sensor instance.
+            config (dict): Sensor configuration dictionary.
+        """
+        self.config = {} if config is None else config
+
+        width = 256
+        height = 256
+
+        if "CaptureHeight" in self.config:
+            height = self.config["CaptureHeight"]
+        if "CaptureWidth" in self.config:
+            width = self.config["CaptureWidth"]
+
+        self.shape = (height, width, 4)
+
+        if "IRMapping" not in self.config:
+            self.config["IRMapping"] = self._gerar_mapeamento_termico_automatico()
+            
+        print(f"DEBUG MAPA GERADO: {self.config['IRMapping']}")
+        super(IRCamera, self).__init__(
+            client, agent_name, agent_type, name=name, config=self.config
+        )
+
+    def _gerar_mapeamento_termico_automatico(self):
+        """
+        Generates a thermal mapping dictionary based on the environment's palette.json.
+        
+        It searches for the semantic palette file, matches objects to a default 
+        thermal properties list, and calculates the expected radiance. The radiance 
+        is then normalized to a 0-255 scale bounded by absolute min/max temperatures.
+        
+        Returns:
+            dict: A mapping of object IDs to normalized thermal intensity values (0-255).
+        """
+        propriedades_padrao = {
+            "water": [288.0, 0.96],
+            "sky": [240.0, 1.0],
+            "volumetriccloud": [250.0, 1.0],
+            
+            "dji": [330.0, 0.95],
+            "holodeckagent": [330.0, 0.95],
+            
+            "street": [318.0, 0.92],
+            "tire": [315.0, 0.95],
+            "container": [315.0, 0.85],
+            "oilbarrel": [315.0, 0.85],
+            "ironfence": [310.0, 0.85],
+            
+            "boat": [330.0, 0.90],
+            "sand": [308.0, 0.90],
+            "concrete": [310.0, 0.92],
+            "floorstones": [318.0, 0.92],
+            
+            "rock": [305.0, 0.95],
+            "landscape": [305.0, 0.92],
+            "house": [305.0, 0.90],
+            "securitybooth": [305.0, 0.90],
+            "tower": [305.0, 0.90],
+            "coveredstructure": [305.0, 0.90],
+            "barricade": [305.0, 0.90],
+            "bollard": [305.0, 0.90],
+            
+            "dock": [302.0, 0.90],
+            "wood": [300.0, 0.90],
+            "log": [300.0, 0.90],
+            "pallet": [300.0, 0.90],
+            
+            "floordrain": [295.0, 0.90],
+            "lightpole": [330.0, 0.85],
+            "advertisement": [295.0, 0.90],
+            "trash": [295.0, 0.90],
+            
+            "staticmesh": [292.0, 0.92]
+        }
+
+        caminhos_tentativa = ["palette.json"]
+        caminho_customizado = self.config.get("PalettePath", None)
+        if caminho_customizado:
+            caminhos_tentativa.insert(0, caminho_customizado)
+
+        home_dir = os.path.expanduser("~")
+        padrao_biguasim = os.path.join(home_dir, ".local", "share", "biguasim", "*", "worlds", "*", "palette.json")
+        caminhos_tentativa.extend(glob.glob(padrao_biguasim))
+        
+        palette = {}
+        for caminho in caminhos_tentativa:
+            if os.path.exists(caminho):
+                with open(caminho, 'r') as f:
+                    palette = json.load(f)
+                print(f"DEBUG IRCamera: Arquivo palette encontrado em: {caminho}")
+                break
+
+        def calcular_ir(temp, emiss):
+            w = np.arange(8, 14, 0.1)
+            c1, c2 = 1.19104e8, 1.43879e4
+            rad = emiss * (c1 / ((w**5) * (np.exp(c2 / (w * temp)) - 1)))
+            return np.trapz(rad, dx=0.1)
+
+        radiancia_bruta = {}
+        for tag, data in palette.items():
+            obj_id = data.get("id")
+            tag_lower = tag.lower()
+            
+            props = [290.0, 0.95] 
+            
+            for chave, valores in propriedades_padrao.items():
+                if chave in tag_lower:
+                    props = valores
+                    break
+                    
+            radiancia_bruta[str(obj_id)] = calcular_ir(props[0], props[1])
+
+        if not radiancia_bruta:
+            print("AVISO IRCamera: Nenhum JSON de palette encontrado!")
+            return {}
+            
+        min_rad_absoluto = calcular_ir(250.0, 1.0)
+        max_rad_absoluto = calcular_ir(350.0, 1.0)
+        
+        mapa_final = {}
+        for i in range(256):
+            mapa_final[str(i)] = 0 
+            
+        for obj_id, rad in radiancia_bruta.items():
+            rad_cortada = max(min_rad_absoluto, min(rad, max_rad_absoluto))
+            valor_norm = int(((rad_cortada - min_rad_absoluto) / (max_rad_absoluto - min_rad_absoluto)) * 255)
+            mapa_final[str(obj_id)] = max(0, min(255, valor_norm))
+            
+        return mapa_final
+
+    @property
+    def dtype(self):
+        return np.uint8
+
+    @property
+    def data_shape(self):
+        return self.shape
+
+    def set_ticks_per_capture(self, ticks_per_capture):
+        """
+        Sets the update rate of the sensor physics tick.
+        """
+        if not isinstance(ticks_per_capture, int) or ticks_per_capture < 1:
+            raise Exception("Invalid ticks_per_capture value")
+
+        command_to_send = RGBCameraRateCommand(
+            self.agent_name, self.name, ticks_per_capture, ""
+        )
+        self._client.command_center.enqueue_command(command_to_send)
+        self.tick_every = ticks_per_capture
+
+    @property
+    def sensor_data(self):
+        """
+        Retrieves the current thermal image.
+        
+        Reads the raw segmentation IDs, maps them to the computed thermal intensities,
+        and applies a JET colormap for visualization.
+        
+        Returns:
+            np.ndarray: Color-mapped thermal image array.
+        """
+        raw_img = super(IRCamera, self).sensor_data
+        
+        if raw_img is None:
+            return None
+
+        if len(raw_img.shape) == 3 and raw_img.shape[2] == 4:
+            img_ids = raw_img[:, :, 0] 
+        else:
+            img_ids = raw_img
+
+        img_termica = np.zeros_like(img_ids, dtype=np.uint8)
+        mapa_calor = self.config.get("IRMapping", {})
+        
+        for obj_id, valor_temperatura in mapa_calor.items():
+            img_termica[img_ids == int(obj_id)] = valor_temperatura
+
+        img_colorida = cv2.applyColorMap(img_termica, cv2.COLORMAP_JET)
+
+        return img_colorida
+
+
+class NormalsCamera(BiguaSimSensor):
+    """
+    Captures the surface normals of the scene.
+    
+    Provides a geometric understanding of the environment by returning 
+    a 3D vector (X, Y, Z) for each pixel, representing the orientation 
+    of the surface relative to the camera.
+    """
+    sensor_type = "NormalsCamera"
+
+    def __init__(self, client, agent_name, agent_type, name="NormalsCamera", config=None):
+        """
+        Initializes the Normals Camera sensor.
+        
+        Args:
+            client: The BiguaSim client connection.
+            agent_name (str): The name of the agent holding the sensor.
+            agent_type (str): The type of the agent.
+            name (str): The name of this sensor instance.
+            config (dict): Sensor configuration dictionary.
+        """
+        self.config = {} if config is None else config
+
+        width = 256
+        height = 256
+
+        if "CaptureHeight" in self.config:
+            height = self.config["CaptureHeight"]
+
+        if "CaptureWidth" in self.config:
+            width = self.config["CaptureWidth"]
+
+        self.shape = (height, width, 4)
+
+        super(NormalsCamera, self).__init__(
+            client, agent_name, agent_type, name=name, config=config
+        )
+
+    @property
+    def dtype(self):
+        return np.uint8
+
+    @property
+    def data_shape(self):
+        return self.shape
+
+    def set_ticks_per_capture(self, ticks_per_capture):
+        """
+        Sets the update rate of the sensor physics tick.
+        """
+        if not isinstance(ticks_per_capture, int) or ticks_per_capture < 1:
+            raise BiguaSimConfigurationException(
+                "Invalid ticks_per_capture value " + str(ticks_per_capture)
+            )
+
+        command_to_send = RGBCameraRateCommand(
+            self.agent_name, self.name, ticks_per_capture, ""
+        )
+        self._client.command_center.enqueue_command(command_to_send)
+        self.tick_every = ticks_per_capture
+
+    @property
+    def sensor_data(self):
+        """
+        Retrieves and processes the surface normals data.
+        
+        Reads the raw BGRA buffer from the Unreal Engine, normalizes the 
+        color values to a geometric direction range [-1.0, 1.0], and 
+        swaps channels to output standard XYZ vectors.
+        
+        Returns:
+            np.ndarray: A float32 array containing the (X, Y, Z) normal vectors.
+        """
+        raw_buffer = super(NormalsCamera, self).sensor_data
+        
+        if raw_buffer is None:
+            return None
+
+        bgr_bruto = raw_buffer[..., :3].astype(np.float32)
+        
+        normals_bgr = (bgr_bruto / 255.0) * 2.0 - 1.0
+
+        normals_xyz = normals_bgr[..., ::-1]
+
+        return normals_xyz
+    
 ######################################################################################
 class SensorDefinition:
     """A class for new sensors and their parameters, to be used for adding new sensors.
@@ -2268,6 +2803,8 @@ class SensorDefinition:
         "DynamicsSensor": DynamicsSensor,
         "PressureSensor": PressureSensor,
         "CollisionSensor": CollisionSensor,
+        "WaterCollisionSensor": WaterCollisionSensor,
+        "CoverageSensor": CoverageSensor,
         "RangeFinderSensor": RangeFinderSensor,
         "WorldNumSensor": WorldNumSensor,
         "BallLocationSensor": BallLocationSensor,
@@ -2287,7 +2824,9 @@ class SensorDefinition:
         "RaycastSemanticLidar": RaycastSemanticLidar,
         "FOVDetection": FOVDetection,
         "AnnotationComponent" : AnnotationComponent,
-        "DepthCamera" : DepthCamera
+        "DepthCamera" : DepthCamera,
+        "IRCamera" : IRCamera,
+        "NormalsCamera" : NormalsCamera
     }
 
     # Sensors that need timeout turned off

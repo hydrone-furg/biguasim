@@ -125,7 +125,24 @@ class BiguaSimClient:
             self._memory[key] = Shmem(key, shape, dtype, self._uuid)
 
         return self._memory[key].np_array
-    
+
+    def mapped_size(self, key):
+        """Current size in bytes of an allocated shared-memory block, as left by whichever side sized it last.
+
+        The engine resizes a block to what it expects when it opens it, so a block smaller than the client
+        allocated means the engine does not know about the extra data (e.g. an older world binary).
+        Reading past that size would crash the process with SIGBUS.
+
+        Args:
+            key (:obj:`str`): The key the block was allocated with.
+
+        Returns:
+            :obj:`int` or :obj:`None`: The size in bytes, or ``None`` where it cannot be known (Windows).
+        """
+        if os.name != "posix":
+            return None
+        return os.path.getsize(self._memory[key]._mem_path)
+
     # def free(self, key):
     #     mm = self._memory[key]._mem_pointer
     #     # print(b"\x00" * self._memory[key]._mem_pointer.size())

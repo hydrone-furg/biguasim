@@ -543,12 +543,31 @@ void AP_MotorsMulticopter::update_throttle_range()
     hal.rcout->set_esc_scaling(get_pwm_output_min(), get_pwm_output_max());
 }
 
+// minimum possible hover throttle. ArduHydrone: the Hydrone's air rotors give a thrust-to-weight of ~19, so it
+// hovers near 5 % thrust, below what a usual multicopter can (AP_MOTORS_THST_HOVER_MIN). Kept at the usual minimum,
+// the hover estimate stays too high and the mixer holds the average thrust above hover: the vehicle cannot descend
+// to its altitude target (0.67 m above it in SITL). Defined here, not in the header, because this file is built per
+// vehicle (it uses APM_BUILD_TYPE) and the header is not.
+static constexpr float thst_hover_min()
+{
+#if APM_BUILD_TYPE(APM_BUILD_ArduHydrone)
+    return 0.02f;
+#else
+    return AP_MOTORS_THST_HOVER_MIN;
+#endif
+}
+
+float AP_MotorsMulticopter::get_throttle_hover() const
+{
+    return constrain_float(_throttle_hover, thst_hover_min(), AP_MOTORS_THST_HOVER_MAX);
+}
+
 // update the throttle input filter.  should be called at 100hz
 void AP_MotorsMulticopter::update_throttle_hover(float dt)
 {
     if (_throttle_hover_learn != HOVER_LEARN_DISABLED) {
         // we have chosen to constrain the hover throttle to be within the range reachable by the third order expo polynomial.
-        _throttle_hover.set(constrain_float(_throttle_hover + (dt / (dt + AP_MOTORS_THST_HOVER_TC)) * (get_throttle() - _throttle_hover), AP_MOTORS_THST_HOVER_MIN, AP_MOTORS_THST_HOVER_MAX));
+        _throttle_hover.set(constrain_float(_throttle_hover + (dt / (dt + AP_MOTORS_THST_HOVER_TC)) * (get_throttle() - _throttle_hover), thst_hover_min(), AP_MOTORS_THST_HOVER_MAX));
     }
 }
 

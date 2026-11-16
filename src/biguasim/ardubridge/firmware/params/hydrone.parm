@@ -1,0 +1,116 @@
+# Hydrone (hybrid aerial-underwater vehicle) on ArduHydrone, the ArduCopter + ArduSub fusion built from the hydrone
+# branch of the ArduPilot submodule (firmware/HYDRONE_FIRMWARE_PLAN.md). Loaded after ArduPilot's
+# default_params/copter.parm.
+# BiguaSim model: dynamics.hauv.OctaCopterFourAirFourWaterCross, 2.7 kg: four air rotors 0..592.4 rad/s (only push
+# out of the water) and four water thrusters -278.9..278.9 rad/s (only push in it).
+#
+# Air side: ArduCopter's own code, a quad plus. Its values are the ones the QuadPlane setup flew with
+# (hydrone_quadplane.parm and quadplane.parm), carried over to ArduCopter's names: the motor mixer (AP_MotorsMatrix)
+# and the attitude controller (AC_AttitudeControl_Multi) are the same classes, so they mean the same.
+# Water side (ArduHydrone/hydrone.cpp): ArduSub's attitude controller (ATW_), a second position controller for the
+# depth (PSW), the turn-then-surge guidance and the medium manager (HYD_).
+
+# Quad plus on SERVO1..4. The bridge sends MOT1..4 to the right, left, front and rear air rotors.
+FRAME_CLASS     1
+FRAME_TYPE      0
+# Water thrusters on SERVO5..8 = MOT5..8 (AP_MotorsHydrone): front vertical, right forward, rear vertical, left
+# forward; 1500 +- 400 us is full reverse..forward thrust (the bridge sets the thrust, not the speed, from the pulse).
+SERVO5_FUNCTION 37
+SERVO6_FUNCTION 38
+SERVO7_FUNCTION 39
+SERVO8_FUNCTION 40
+
+# The bridge maps 1000..2000 us linearly to 0..592.4 rad/s: thrust grows with the square of the output.
+MOT_PWM_MIN     1000
+MOT_PWM_MAX     2000
+MOT_THST_EXPO   1.0
+MOT_SPIN_ARM    0.02
+MOT_SPIN_MIN    0.03
+MOT_SPIN_MAX    1.0
+MOT_BAT_VOLT_MAX 0
+# Hover: 26.5 N of the 498 N the four rotors give (thrust-to-weight 19)
+MOT_THST_HOVER  0.053
+
+# One IMU sample per physics step (400 Hz): ArduPilot wants them at 1.8 x its loop rate or more.
+SCHED_LOOP_RATE 200
+
+# Rate gains, as on the QuadPlane (1/5 of quadplane.parm's: thrust-to-weight 19, about 10x a usual quad's control
+# authority); angle P as quadplane.parm.
+ATC_RAT_RLL_P   0.0216
+ATC_RAT_RLL_I   0.0216
+ATC_RAT_RLL_D   0.0002
+ATC_RAT_PIT_P   0.0206
+ATC_RAT_PIT_I   0.0206
+ATC_RAT_PIT_D   0.0002
+ATC_RAT_YAW_P   0.04
+ATC_RAT_YAW_I   0.004
+ATC_ANG_RLL_P   6
+ATC_ANG_PIT_P   6
+
+# Vertical acceleration loop, scaled to the hover throttle. Its gains are throttle per m/s^2, and 1 m/s^2 is
+# 0.053 / 9.81 = 0.0054 of throttle here against ~0.036 on a usual copter (hover 0.35): Copter's P 0.05 / I 0.1
+# keep their ratio to that at P 0.0076 / I 0.015. The QuadPlane value (P 0.03, I = P) was 4x stiffer and the
+# collective limit-cycled at ~6 Hz (rotor speed +-69 rad/s), holding the Hydrone 0.3-0.7 m above its target; with
+# these, +-0.1 rad/s and within 0.03 m (offline hover at 4 m).
+PSC_D_ACC_P     0.0076
+PSC_D_ACC_I     0.015
+PSC_D_ACC_FLTE  10
+# Horizontal position loop (acts through the lean angle, so the thrust-to-weight does not scale it). Offline 6 m step
+# at 4 m: the QuadPlane's 0.5 / 0.7 / 0.35 / 0.17 overshot 0.51 m and settled (0.2 m) in 14 s, ArduCopter's defaults
+# (1 / 1 / 0.5 / 0) 0.29 m in 10 s, these 0.09 m in 4.1 s, with no change in the collective.
+PSC_NE_POS_P    1
+PSC_NE_VEL_P    2
+PSC_NE_VEL_I    1
+PSC_NE_VEL_D    0.25
+# The rest of the QuadPlane VTOL setup the Hydrone flew with: ArduPlane's QuadPlane defaults (AC_PosControl's Plane
+# defaults and QuadPlane::defaults_table), where ArduCopter's own differ.
+ATC_RAT_RLL_FLTD 10
+ATC_RAT_PIT_FLTD 10
+ATC_RAT_RLL_SMAX 50
+ATC_RAT_PIT_SMAX 50
+ATC_RAT_YAW_SMAX 50
+ATC_RATE_R_MAX  75
+ATC_RATE_P_MAX  75
+ATC_RATE_Y_MAX  75
+ATC_ACC_R_MAX   400
+ATC_ACC_P_MAX   400
+ATC_ACC_Y_MAX   100
+MOT_SPOOL_TIME  0.25
+LOIT_ANG_MAX    15
+LOIT_ACC_MAX_M  2.5
+LOIT_BRK_ACC_M  0.5
+LOIT_BRK_JRK_M  2.5
+LOIT_SPEED_MS   5
+WP_SPD          5
+WP_ACC          1
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Water side
+# ---------------------------------------------------------------------------------------------------------------------
+# Water thrusters: 29.6 N each. Pitch (front/rear vertical pair, 0.25 m arms): 14.8 N m at full output, ~450 rad/s^2
+# on pitch inertia + added inertia 0.033 kg m^2; yaw (left/right forward pair): 14.8 N m, ~750 rad/s^2 on 0.020.
+# Roll is not actuated, and fully under water the model's hull does not right it. Yaw is the intermediate inertia
+# axis (Ixx 0.0145 < Izz 0.0154 < Iyy 0.0288), so every water turn grows the roll (the vehicle levels again at the
+# surface before a breach, HYD_BRCH_ANG), and a rolled hull drifts sideways (the vertical thrust tilts). Offline,
+# turning in place at 30 deg/s rolled it more (-19 deg after the square) than surging through the turn at 45 deg/s
+# (-11 deg).
+ATW_RAT_PIT_P   0.05
+ATW_RAT_PIT_I   0.05
+ATW_RAT_PIT_D   0.001
+ATW_RAT_YAW_P   0.06
+ATW_RAT_YAW_I   0.01
+ATW_ANG_PIT_P   6
+ATW_ANG_YAW_P   4
+ATW_RATE_Y_MAX  45
+ATW_RATE_P_MAX  60
+# Depth: 1 throttle unit is 2 x 59 N of heave (throttle 0.5 is neutral), ~0.035 per m/s^2 on 2.7 kg + 1.4 kg added
+# mass; the integrator carries the 3.9 N of net buoyancy.
+PSW_D_ACC_P     0.035
+PSW_D_ACC_I     0.07
+PSW_D_ACC_D     0
+PSW_D_VEL_P     2
+PSW_D_POS_P     1
+# Medium manager: the water surface is home's altitude (the bridge's origin), floating the center of mass is ~5 cm
+# under it and the air rotors are wet.
+HYD_ENABLE      1
+HYD_SURF_AMSL   0

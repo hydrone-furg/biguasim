@@ -83,6 +83,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.get_ocean_current_velocity"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.get_ocean_current_velocity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.has_camera"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.has_camera()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.remove_sensors"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.remove_sensors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_control_abstraction"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.set_control_abstraction()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_control_scheme"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.set_control_scheme()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_physics_state"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.set_physics_state()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.teleport"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.teleport()</span></code></a></li>
@@ -102,6 +103,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#biguasim.agents.DjiMatrice"><code class="docutils literal notranslate"><span class="pre">DjiMatrice</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.DjiMatrice.control_abstractions"><code class="docutils literal notranslate"><span class="pre">DjiMatrice.control_abstractions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#biguasim.agents.Hydrone"><code class="docutils literal notranslate"><span class="pre">Hydrone</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.agents.Hydrone.control_abstractions"><code class="docutils literal notranslate"><span class="pre">Hydrone.control_abstractions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#biguasim.agents.TorpedoAUV"><code class="docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a><ul>
@@ -177,7 +182,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.DjiMatrice" title="biguasim.agents.DjiMatrice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DjiMatrice</span></code></a>(client[, name])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.agents.TorpedoAUV" title="biguasim.agents.TorpedoAUV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a>(client[, name])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.agents.Hydrone" title="biguasim.agents.Hydrone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hydrone</span></code></a>(client[, name])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.TorpedoAUV" title="biguasim.agents.TorpedoAUV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a>(client[, name])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -310,13 +318,16 @@ BiguaSimSensors on this agent.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.remove_sensors" title="biguasim.agents.BiguaSimAgent.remove_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_sensors</span></code></a>(sensor_defs)</p></td>
 <td><p>Removes a sensor from a particular agent object and detaches it from the agent in the world.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_control_scheme" title="biguasim.agents.BiguaSimAgent.set_control_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control_scheme</span></code></a>(index)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_control_abstraction" title="biguasim.agents.BiguaSimAgent.set_control_abstraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control_abstraction</span></code></a>(cmd_ctrl)</p></td>
 <td><p>Sets the control scheme for the agent.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_physics_state" title="biguasim.agents.BiguaSimAgent.set_physics_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_physics_state</span></code></a>(location, rotation, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_control_scheme" title="biguasim.agents.BiguaSimAgent.set_control_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control_scheme</span></code></a>(index)</p></td>
+<td><p>Sets the control scheme for the agent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.set_physics_state" title="biguasim.agents.BiguaSimAgent.set_physics_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_physics_state</span></code></a>(location, rotation, ...)</p></td>
 <td><p>Sets the location, rotation, velocity and angular velocity of an agent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.teleport" title="biguasim.agents.BiguaSimAgent.teleport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">teleport</span></code></a>([location, rotation])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.BiguaSimAgent.teleport" title="biguasim.agents.BiguaSimAgent.teleport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">teleport</span></code></a>([location, rotation])</p></td>
 <td><p>Teleports the agent to a specific location, with a specific rotation.</p></td>
 </tr>
 </tbody>
@@ -429,6 +440,17 @@ specified joint. Will return None if the joint does not exist for the agent.</p>
 world.</p>
 <dl class="simple">
 <dt>:param sensor_defs (<a class="reference internal" href="sensors.html#biguasim.sensors.BiguaSimSensor" title="biguasim.sensors.BiguaSimSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BiguaSimSensor</span></code></a> or:          list of <a class="reference internal" href="sensors.html#biguasim.sensors.BiguaSimSensor" title="biguasim.sensors.BiguaSimSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BiguaSimSensor</span></code></a>):</dt><dd><p>Sensors to remove from the agent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biguasim.agents.BiguaSimAgent.set_control_abstraction">
+<span class="sig-name descname"><span class="pre">set_control_abstraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_ctrl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.agents.BiguaSimAgent.set_control_abstraction" title="Link to this definition"></a></dt>
+<dd><p>Sets the control scheme for the agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – The control scheme to use. Should be set with an enum from</p>
 </dd>
 </dl>
 </dd></dl>
@@ -584,6 +606,35 @@ element containing the <code class="xref py py-obj docutils literal notranslate"
 <dl class="py property">
 <dt class="sig sig-object py" id="biguasim.agents.DjiMatrice.control_abstractions">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">control_abstractions</span></span><a class="headerlink" href="#biguasim.agents.DjiMatrice.control_abstractions" title="Link to this definition"></a></dt>
+<dd><p>A list of all control schemes for the agent. Each list element is a 2-tuple, with the
+first element containing a short description of the control scheme, and the second
+element containing the <code class="xref py py-obj docutils literal notranslate"><span class="pre">ActionSpace</span></code> for the control scheme.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Each tuple contains a short description and the ActionSpace</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>(<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="spaces.html#biguasim.spaces.ActionSpace" title="biguasim.spaces.ActionSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">ActionSpace</span></code></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biguasim.agents.Hydrone">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.agents.</span></span><span class="sig-name descname"><span class="pre">Hydrone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DefaultAgent'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.agents.Hydrone" title="Link to this definition"></a></dt>
+<dd><p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.agents.Hydrone.control_abstractions" title="biguasim.agents.Hydrone.control_abstractions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_abstractions</span></code></a></p></td>
+<td><p>A list of all control schemes for the agent.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.agents.Hydrone.control_abstractions">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">control_abstractions</span></span><a class="headerlink" href="#biguasim.agents.Hydrone.control_abstractions" title="Link to this definition"></a></dt>
 <dd><p>A list of all control schemes for the agent. Each list element is a 2-tuple, with the
 first element containing a short description of the control scheme, and the second
 element containing the <code class="xref py py-obj docutils literal notranslate"><span class="pre">ActionSpace</span></code> for the control scheme.</p>

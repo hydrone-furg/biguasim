@@ -10,8 +10,23 @@ Changelog
     "Fixed"
   - Add a link to the issue describing the change or the pull request that
     merged it at the end in parentheses
-  - see https://github.com/BYU-PCCL/holodeck/wiki/Holodeck-Release-Notes-Template
+BiguaSim 1.1.0
+===============
+*-/-/2026*
 
+New Features
+------------
+
+- Added Infrared Camera sensor
+- Added Normals Camera sensor
+- Added Buoy with physics in Pier-Harbor world
+
+Bug Fixes
+---------
+
+- Fixed some problems with the docs
+
+Two new sensors
 BiguaSim 1.0.0
 ===============
 *-/-/2026*

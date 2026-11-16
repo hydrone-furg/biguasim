@@ -53,6 +53,7 @@ class BiguaSimAgent:
                                                           np.uint8)
         self._ocean_current_velocity = self._client.malloc(name + "_ocean_current_velocity", [3], np.float32)
         self._current_control_scheme = 0
+        self._current_control_abstraction = 0
         self.set_control_scheme(0)
 
     def act(self, action):
@@ -79,6 +80,16 @@ class BiguaSimAgent:
         # self._control_scheme_buffer[0] = self._current_control_abstraction
         self._current_control_scheme = index
         self._control_scheme_buffer[0] = self._current_control_scheme
+
+    def set_control_abstraction(self, cmd_ctrl):
+        """Sets the control scheme for the agent.
+
+        Args:
+            index (:obj:`int`): The control scheme to use. Should be set with an enum from
+        """
+        # self._current_control_abstraction = index % self._num_control_abstractions
+        # self._control_scheme_buffer[0] = self._current_control_abstraction
+        self._current_control_abstraction = self.abstractions_space[cmd_ctrl]
 
     def teleport(self, location=None, rotation=None):
         """Teleports the agent to a specific location, with a specific rotation.
@@ -220,6 +231,14 @@ class BiguaSimAgent:
 class BlueBoat(BiguaSimAgent):
     agent_type = "BlueBoat"
 
+    abstractions_space = {
+        'accel' : 0,
+        'cmd_motor_speeds' : 1,
+        'cmd_vel'  : 2,
+        'cmd_vel_yaw' : 3,
+        'cmd_pos_yaw' : 4
+    }
+
     @property
     def control_abstractions(self):
         scheme_accel = "[lin_accel_x, lin_accel_y, lin_accel_z, ang_accel_x, ang_accel_y, ang_accel_x]"
@@ -241,6 +260,14 @@ class BlueBoat(BiguaSimAgent):
 
 class BlueROV2(BiguaSimAgent):
     agent_type = 'BlueROV2'
+
+    abstractions_space = {
+        'accel' : 0,
+        'cmd_motor_speeds' : 1,
+        'cmd_vel'  : 2,
+        'cmd_vel_yaw' : 3,
+        'cmd_pos_yaw' : 4
+    }
 
     @property
     def control_abstractions(self):
@@ -264,6 +291,14 @@ class BlueROV2(BiguaSimAgent):
 class BlueROV2Heavy(BiguaSimAgent):
     agent_type = 'BlueROV2Heavy'
 
+    abstractions_space = {
+        'accel' : 0,
+        'cmd_motor_speeds' : 1,
+        'cmd_vel'  : 2,
+        'cmd_vel_yaw' : 3,
+        'cmd_pos_yaw' : 4
+    }
+
     @property
     def control_abstractions(self):
         scheme_accel = "[lin_accel_x, lin_accel_y, lin_accel_z, ang_accel_x, ang_accel_y, ang_accel_x]"
@@ -286,6 +321,14 @@ class BlueROV2Heavy(BiguaSimAgent):
 class DjiMatrice(BiguaSimAgent):
     agent_type = 'DjiMatrice'
 
+    abstractions_space = {
+        'accel' : 0,
+        'cmd_motor_speeds' : 1,
+        'cmd_vel'  : 2,
+        'cmd_vel_yaw' : 3,
+        'cmd_pos_yaw' : 4
+    }
+
     @property
     def control_abstractions(self):
         scheme_accel = "[lin_accel_x, lin_accel_y, lin_accel_z, ang_accel_x, ang_accel_y, ang_accel_x]"
@@ -302,10 +345,45 @@ class DjiMatrice(BiguaSimAgent):
 
     def __repr__(self):
         return "DjiMatrice " + self.name
+    
+class Hydrone(BiguaSimAgent):
+    agent_type = 'Hydrone'
+
+    abstractions_space = {
+        'accel' : 0,
+        'cmd_motor_speeds' : 1,
+        'cmd_vel' : 2,
+        'cmd_vel_yaw' : 3,
+        'cmd_pos_yaw' : 4
+    }
+
+    @property
+    def control_abstractions(self):
+        scheme_accel = "[lin_accel_x, lin_accel_y, lin_accel_z, ang_accel_x, ang_accel_y, ang_accel_x]"
+        thrusters = "[r1 thruster, r2 thruster, r3 thruster, r4 thruster, r5 thruster, r6 thruster, r7 thruster, r8 thruster]"
+        cmd_vel = "[vx, vy, vz]"
+        cmd_vel_yaw = "[vx, vy, vz, yaw_rate]"
+        cmd_pos_yaw = "[px, py, pz, yaw]"
+        
+        return [(scheme_accel, ContinuousActionSpace([6], low=[-20] * 3 + [-2] * 3, high=[20] * 3 + [2] * 3)),
+                (thrusters, ContinuousActionSpace([8], low=[0,  -278.9], high=[592.4,  278.9])),
+                (cmd_vel, ContinuousActionSpace([3], low=[-10] * 3, high=[10]*3)),
+                (cmd_vel_yaw, ContinuousActionSpace([4], low=[-10] * 3 + [-180] , high=[10] * 3 + [180])),
+                (cmd_pos_yaw, ContinuousActionSpace([4], low=[-100] * 3 + [-180] , high=[10] * 3 + [180]))
+                ]
+
+    def __repr__(self):
+        return "Hydrone " + self.name
 
 
 class TorpedoAUV(BiguaSimAgent):
     agent_type = 'TorpedoAUV'
+
+    abstractions_space = {
+        'accel' : 0,
+        'cmd_rudders_sterns_motor_speed' : 1,
+        'cmd_depth_heading_rpm_surge'  : 2
+    }
 
     @property
     def control_abstractions(self):
@@ -346,6 +424,7 @@ class AgentDefinition:
         "BlueROV2": BlueROV2,
         "BlueROV2Heavy" : BlueROV2Heavy,
         "DjiMatrice" : DjiMatrice,
+        "Hydrone" : Hydrone,
         "TorpedoAUV": TorpedoAUV,
     }
 

@@ -189,8 +189,10 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 <li class="toctree-l1"><a class="reference internal" href="examples/examples.html">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/camera.html">Visualizing RGBCamera Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/controller.html">Manually Controlling an Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/examples/custom-dynamics.html">Manually Defining Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/multi-agent.html">Multi Agent Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/multi-coms.html">Multi-Agent Communications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/examples/pd-controllers.html">Example: PD Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/sonar_imaging.html">Visualizing Imaging Sonar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/sonar_profiling.html">Visualizing Profiling Sonar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/examples/sonar_sidescan.html">Visualizing Sidescan Sonar</a></li>
@@ -206,7 +208,7 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/changelog.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog/changelog.html#biguasim-1-0-0">BiguaSim 1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog/changelog.html#biguasim-1-1-0">BiguaSim 1.1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -242,6 +244,7 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.get_ocean_current_velocity"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.get_ocean_current_velocity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.has_camera"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.has_camera()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.remove_sensors"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.remove_sensors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.set_control_abstraction"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.set_control_abstraction()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.set_control_scheme"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.set_control_scheme()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.set_physics_state"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.set_physics_state()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.BiguaSimAgent.teleport"><code class="docutils literal notranslate"><span class="pre">BiguaSimAgent.teleport()</span></code></a></li>
@@ -261,6 +264,10 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 </li>
 <li class="toctree-l2"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.DjiMatrice"><code class="docutils literal notranslate"><span class="pre">DjiMatrice</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.DjiMatrice.control_abstractions"><code class="docutils literal notranslate"><span class="pre">DjiMatrice.control_abstractions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.Hydrone"><code class="docutils literal notranslate"><span class="pre">Hydrone</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.Hydrone.control_abstractions"><code class="docutils literal notranslate"><span class="pre">Hydrone.control_abstractions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="biguasim/agents.html#biguasim.agents.TorpedoAUV"><code class="docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a><ul>
@@ -454,6 +461,13 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 <li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.IMUSensor.dtype"><code class="docutils literal notranslate"><span class="pre">IMUSensor.dtype</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.IRCamera"><code class="docutils literal notranslate"><span class="pre">IRCamera</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.IRCamera.data_shape"><code class="docutils literal notranslate"><span class="pre">IRCamera.data_shape</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.IRCamera.dtype"><code class="docutils literal notranslate"><span class="pre">IRCamera.dtype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.IRCamera.sensor_data"><code class="docutils literal notranslate"><span class="pre">IRCamera.sensor_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.IRCamera.set_ticks_per_capture"><code class="docutils literal notranslate"><span class="pre">IRCamera.set_ticks_per_capture()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.ImagingSonar"><code class="docutils literal notranslate"><span class="pre">ImagingSonar</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.ImagingSonar.data_shape"><code class="docutils literal notranslate"><span class="pre">ImagingSonar.data_shape</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.ImagingSonar.dtype"><code class="docutils literal notranslate"><span class="pre">ImagingSonar.dtype</span></code></a></li>
@@ -468,6 +482,13 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 <li class="toctree-l2"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.MagnetometerSensor"><code class="docutils literal notranslate"><span class="pre">MagnetometerSensor</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.MagnetometerSensor.data_shape"><code class="docutils literal notranslate"><span class="pre">MagnetometerSensor.data_shape</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.MagnetometerSensor.dtype"><code class="docutils literal notranslate"><span class="pre">MagnetometerSensor.dtype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.NormalsCamera"><code class="docutils literal notranslate"><span class="pre">NormalsCamera</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.NormalsCamera.data_shape"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.data_shape</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.NormalsCamera.dtype"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.dtype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.NormalsCamera.sensor_data"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.sensor_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.NormalsCamera.set_ticks_per_capture"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.set_ticks_per_capture()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="biguasim/sensors.html#biguasim.sensors.OpticalModemSensor"><code class="docutils literal notranslate"><span class="pre">OpticalModemSensor</span></code></a><ul>
@@ -584,7 +605,6 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 </li>
 <li class="toctree-l2"><a class="reference internal" href="biguasim/dynamics.html#module-biguasim.dynamics.usv">USV (Unmanned Surface Vehicles)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.usv.Catamaran"><code class="docutils literal notranslate"><span class="pre">Catamaran</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.usv.Differential"><code class="docutils literal notranslate"><span class="pre">Differential</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="biguasim/dynamics.html#module-biguasim.dynamics.agents">Agents Factory</a><ul>
@@ -592,8 +612,8 @@ at <a class="reference external" href="https://www.furg.br">Federal University o
 <li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.BlueROV2"><code class="docutils literal notranslate"><span class="pre">BlueROV2</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.BlueROVHeavy"><code class="docutils literal notranslate"><span class="pre">BlueROVHeavy</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.DjiMatrice"><code class="docutils literal notranslate"><span class="pre">DjiMatrice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.Hydrone"><code class="docutils literal notranslate"><span class="pre">Hydrone</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.ModelsFactory"><code class="docutils literal notranslate"><span class="pre">ModelsFactory</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.Torpedo"><code class="docutils literal notranslate"><span class="pre">Torpedo</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="biguasim/dynamics.html#biguasim.dynamics.agents.TorpedoAUV"><code class="docutils literal notranslate"><span class="pre">TorpedoAUV</span></code></a></li>
 </ul>
 </li>

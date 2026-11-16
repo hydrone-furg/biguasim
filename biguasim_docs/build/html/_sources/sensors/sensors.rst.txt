@@ -48,6 +48,8 @@ Perception Sensors
    sensors/semantic-segmentation-camera-sensor
    sensors/raycast-lidar-sensor
    sensors/raycast-semantic-lidar-sensor
+   sensors/ir-camera
+   sensors/normals-camera
 
 Communication Sensors
 ---------------------

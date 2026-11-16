@@ -208,9 +208,9 @@ const AP_Param::GroupInfo QuadPlane::var_info[] = {
 
     // @Param: VFWD_ALT
     // @DisplayName: Forward velocity alt cutoff
-    // @Description: Controls altitude to disable forward velocity assist when below this relative altitude. This is useful to keep the forward velocity propeller from hitting the ground. Rangefinder height data is incorporated when available.
+    // @Description: Controls altitude to disable forward velocity assist when below this relative altitude. This is useful to keep the forward velocity propeller from hitting the ground. Rangefinder height data is incorporated when available. A negative value disables the cutoff (forward thrusters that cannot strike the ground, e.g. a hybrid vehicle's water thrusters).
     // @Units: m
-    // @Range: 0 10
+    // @Range: -1 10
     // @Increment: 0.25
     // @User: Standard
     AP_GROUPINFO("VFWD_ALT", 43, QuadPlane, vel_forward_alt_cutoff_m,  0),
@@ -3040,7 +3040,11 @@ void QuadPlane::assign_tilt_to_fwd_thr(void)
     }
 
     float fwd_thr_scaler;
-    if (!in_vtol_land_approach()) {
+    if (is_negative(vel_forward_alt_cutoff_m)) {
+        // No cutoff: forward thrusters that cannot strike the ground (a hybrid vehicle's water thrusters, used
+        // below the surface, where the height above home is negative)
+        fwd_thr_scaler = 1.0f;
+    } else if (!in_vtol_land_approach()) {
         // To prevent forward motor prop strike, reduce throttle to zero when close to ground.
         float alt_cutoff_m = MAX(0, vel_forward_alt_cutoff_m);
         float height_above_ground_m = plane.relative_ground_altitude(RangeFinderUse::TAKEOFF_LANDING);

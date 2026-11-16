@@ -60,6 +60,7 @@ Beyond these, aerial vehicles like the :ref:`DJI Matrice <djimatrice-agent>` all
 
    docs/agent-config
    docs/control-abstractions
+   docs/vehicle-dynamics
 
 
 .. _agent-pages:

@@ -1,0 +1,16 @@
+# BlueROV2Heavy on ArduSub, loaded after ArduPilot's default_params/sub-6dof.parm.
+# BiguaSim model: dynamics.marine.MarinePlant, eight T200 thrusters at -278.9..278.9 rad/s (k_eta w|w|).
+
+# Vectored 6DOF frame: MOT1..4 horizontal as on the BlueROV2, MOT5..8 front-right, front-left, rear-right and
+# rear-left vertical. The bridge drives the BiguaSim thrusters with them (signs and order in vehicle.py).
+FRAME_CONFIG    2
+MOT_PWM_MIN     1100
+MOT_PWM_MAX     1900
+
+# One IMU sample per physics step (200 Hz): ArduPilot wants them at 1.8 x its loop rate or more.
+SCHED_LOOP_RATE 100
+
+# GUIDED / AUTO speed: BiguaSim's own controller allows 0.29 m/s (MarinePlant._speed_limit, box hull) before a
+# thruster saturates.
+WP_SPD          0.25
+WP_ACC          0.25

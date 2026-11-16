@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+def build(bld):
+    vehicle = bld.path.name
+    bld.ap_stlib(
+        name=vehicle + '_libs',
+        ap_vehicle=vehicle,
+        ap_libraries=bld.ap_common_vehicle_libraries() + [
+            'AC_AttitudeControl',
+            'AC_InputManager',
+            'AC_PrecLand',
+            'AC_Sprayer',
+            'AC_Autorotation',
+            'AC_WPNav',
+            'AP_Camera',
+            'AP_IRLock',
+            'AP_Motors',
+            'AP_Avoidance',
+            'AP_AdvancedFailsafe',
+            'AP_SmartRTL',
+            'AP_WheelEncoder',
+            'AP_Winch',
+            'AP_LTM_Telem',
+            'AP_Devo_Telem',
+            'AC_AutoTune',
+            'AP_KDECAN',
+            'AP_SurfaceDistance'
+        ],
+    )
+
+    # Hydrone hybrid aerial-underwater vehicle: ArduCopter in the air, ArduSub's water stack under water
+    # (see the BiguaSim plan, ardubridge/firmware/HYDRONE_FIRMWARE_PLAN.md). M0: a copy of ArduCopter (multicopter).
+    bld.ap_program(
+        program_name='arduhydrone',
+        program_groups=['bin', 'hydrone'],
+        use=vehicle + '_libs',
+        defines=['FRAME_CONFIG=MULTICOPTER_FRAME'],
+        )

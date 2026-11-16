@@ -1,0 +1,30 @@
+# DjiMatrice (DJI Matrice 300 RTK) on ArduCopter, loaded after ArduPilot's default_params/copter.parm.
+# BiguaSim model: dynamics.uav.QuadCopterX, 6.3 kg, rotors 0..353 rad/s, thrust k_eta w^2 (176.9 N in all).
+
+# Quad X. The bridge sends MOT1..4 (SERVO1..4) to the front-right, back-left, front-left and back-right rotors.
+FRAME_CLASS     1
+FRAME_TYPE      1
+
+# The bridge maps 1000..2000 us linearly to 0..353 rad/s: the thrust grows with the square of the output.
+MOT_PWM_MIN     1000
+MOT_PWM_MAX     2000
+MOT_THST_EXPO   1.0
+MOT_SPIN_ARM    0.05
+MOT_SPIN_MIN    0.08
+MOT_SPIN_MAX    1.0
+# Hover at 6.3 kg: 61.8 N of the 176.9 N, 35 %
+MOT_THST_HOVER  0.35
+MOT_HOVER_LEARN 2
+
+# One IMU sample per physics step (200 Hz): ArduPilot wants them at 1.8 x its loop rate or more.
+SCHED_LOOP_RATE 100
+
+# Rate gains: ArduCopter's defaults suit a ~1.5 kg quad; the Matrice has ~5x its torque per inertia and with them
+# the rotors swung between minimum and 300 rad/s every few ticks. Offline (OfflineWorld) at 200 Hz: hover steady
+# within 0.25 deg, a 15 m step in 4.4 s with 0.13 m overshoot.
+ATC_RAT_RLL_P   0.04
+ATC_RAT_RLL_I   0.04
+ATC_RAT_RLL_D   0.001
+ATC_RAT_PIT_P   0.04
+ATC_RAT_PIT_I   0.04
+ATC_RAT_PIT_D   0.001

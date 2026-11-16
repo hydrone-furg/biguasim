@@ -48,6 +48,9 @@ Perception Sensors
    sensors/semantic-segmentation-camera-sensor
    sensors/raycast-lidar-sensor
    sensors/raycast-semantic-lidar-sensor
+   sensors/ir-camera
+   sensors/normals-camera
+   sensors/coverage-sensor
 
 Communication Sensors
 ---------------------
@@ -76,6 +79,7 @@ other, but are provided for convenience for different use cases.
    sensors/pose-sensor
    sensors/velocity-sensor
    sensors/dynamics-sensor
+   sensors/water-collision-sensor
 
 .. note::
    The location, rotation, orientation, pose, and velocity sensors return values relative to the 

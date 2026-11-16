@@ -1,0 +1,17 @@
+# BlueROV2 on ArduSub, loaded after ArduPilot's default_params/sub.parm.
+# BiguaSim model: dynamics.marine.MarinePlant, 10.5 kg, six T200 thrusters at -278.9..278.9 rad/s (k_eta w|w|).
+
+# Vectored frame: MOT1..4 horizontal (front-right, front-left, rear-right, rear-left), MOT5 / MOT6 right / left
+# vertical. The bridge drives the BiguaSim thrusters with them (signs and order in vehicle.py).
+FRAME_CONFIG    1
+MOT_PWM_MIN     1100
+MOT_PWM_MAX     1900
+
+# One IMU sample per physics step (200 Hz): ArduPilot wants them at 1.8 x its loop rate or more.
+SCHED_LOOP_RATE 100
+
+# GUIDED / AUTO speed. The BlueROV2 has no pitch control: the horizontal thrust tilts it until the righting moment
+# holds it. BiguaSim's own controller allows 0.25 m/s for that tilt to stay under 30 deg (MarinePlant._speed_limit,
+# box hull); offline at 0.25 m/s the worst tilt is 22 deg, at 0.5 m/s it tips over to 72 deg.
+WP_SPD          0.25
+WP_ACC          0.25

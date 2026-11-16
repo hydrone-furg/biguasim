@@ -23,6 +23,8 @@ from biguasim.command import (
     RenderQualityCommand,
     CustomCommand,
     DebugDrawCommand,
+    SpawnPropCommand,
+    RemovePropCommand,
 )
 
 from biguasim.exceptions import BiguaSimException
@@ -31,6 +33,7 @@ from biguasim.agents import AgentDefinition, SensorDefinition, AgentFactory
 from biguasim.weather import WeatherController
 
 from biguasim.sensors import AcousticBeaconSensor
+from biguasim.sensors import DynamicsSensor
 from biguasim.sensors import OpticalModemSensor
 
 from biguasim.util import gpu
@@ -174,6 +177,7 @@ class BiguaSimEnvironment:
 
         self._lcm = None
         self._num_ticks = 0
+        self._dt = 1/self._ticks_per_sec
 
         # Start world based on OS
         if start_world:
@@ -207,6 +211,8 @@ class BiguaSimEnvironment:
 
         # Set up agents already in the world
         self.agents = dict()
+        # Names of props spawned since the last level (re)load
+        self._props = set()
         self._state_dict = dict()
         self._dynamics_dict = dict()
         self._agent = None
@@ -295,9 +301,11 @@ class BiguaSimEnvironment:
         """
 
         def has_valid_dynamics_sensor(agent: dict) -> bool:
+            # The dynamics models need COM data with a quaternion; other options (e.g. ExportGeometry) are free.
             return any(
                 sensor.get("sensor_type") == "DynamicsSensor"
-                and sensor.get("configuration") == {"UseCOM": True, "UseRPY": False}
+                and sensor.get("configuration", {}).get("UseCOM") is True
+                and sensor.get("configuration", {}).get("UseRPY") is False
                 for sensor in agent.get("sensors", [])
             )
         
@@ -322,10 +330,16 @@ class BiguaSimEnvironment:
             for k in  params.keys():
                 if k in agent['dynamics'].keys():
                     params[k] = agent['dynamics'][k]
+            # Optional keys no model lists in its _params (VehicleModel reads them with a default)
+            for k in ('water_level',):
+                if k in agent['dynamics']:
+                    params[k] = agent['dynamics'][k]
 
             self._dynamics_dict[agent['agent_name']] = model(batch_size= batch_size, device= device, 
                                                      control_abstraction=agent["control_abstraction"], 
                                                      params=params)
+            
+            self._dynamics_dict[agent['agent_name']].dt = self._dt
 
             agent['control_scheme'] = self._dynamics_dict[agent['agent_name']]._scheme
 
@@ -482,6 +496,7 @@ class BiguaSimEnvironment:
 
             self.add_agent(agent_def, is_main_agent)
             self.agents[agent["agent_name"]].set_control_scheme(agent["control_scheme"])
+            self.agents[agent["agent_name"]].set_control_abstraction(agent["control_abstraction"])
             self._spawned_agent_defs.append(agent_def)
 
         if "weather" in self._scenario:
@@ -532,6 +547,9 @@ class BiguaSimEnvironment:
             )
         self._command_center.clear()
 
+        # The level reload destroyed every prop
+        self._props = set()
+
         # Load agents
         self._spawned_agent_defs = []
         self.agents = dict()
@@ -554,8 +572,26 @@ class BiguaSimEnvironment:
         for _ in range(self._pre_start_steps + 1):
             self.tick(publish=False, tick_clock=False) #Spawn vehicles problem
 
+        self._apply_exported_geometry()
 
         return self._default_state_fn()
+
+    def _apply_exported_geometry(self):
+        """Hands the collision mesh of each agent's DynamicsSensor to its dynamics model.
+
+        Only for agents whose DynamicsSensor has ExportGeometry. The engine writes the geometry on the first tick
+        after the sensor is created, so this runs at the end of reset, once the agents have ticked.
+        """
+        for agent_name, model in self._dynamics_dict.items():
+            clones = [self.agents[f"{agent_name}-id{j}"] for j in range(model.batch_size)]
+            sensors = [next(s for s in clone.sensors.values() if isinstance(s, DynamicsSensor)) for clone in clones]
+            if not all(sensor.config.get("ExportGeometry", False) for sensor in sensors):
+                continue
+            geometries = [sensor.geometry for sensor in sensors]
+            missing = [clone.name for clone, geometry in zip(clones, geometries) if geometry is None]
+            if missing:
+                raise BiguaSimException(f"The engine has not written the DynamicsSensor geometry of {missing} yet")
+            model.set_geometry(geometries)
 
     def act(self, agent_name, action):
         """Supplies an action to a particular agent, but doesn't tick the environment.
@@ -577,7 +613,6 @@ class BiguaSimEnvironment:
         
         for _ in range(action_repeat):
             state = self.tick()  
-            dt = state['t']
             
             agents_names = self._dynamics_dict.keys()
             for agent_name in agents_names:
@@ -596,7 +631,7 @@ class BiguaSimEnvironment:
                             "A batch of multiple agents detected; control command must be a dict "
                             "mapping agent names to List[List[int]]]."
                         )
-                        action = dynamics_model.step(state[agent_name], cmds[agent_name], dt)
+                        action = dynamics_model.step(state[agent_name]['DynamicsSensor'], cmds[agent_name])
 
                     else:
                         if not isinstance(cmds[agent_name], list) or \
@@ -606,7 +641,7 @@ class BiguaSimEnvironment:
                             "mapping agent names to List[int]."
                         )
 
-                        action = dynamics_model.step(state[agent_name], [cmds[agent_name]], dt)
+                        action = dynamics_model.step(state[agent_name]['DynamicsSensor'], [cmds[agent_name]])
 
                 else:
                     if dynamics_model.batch_size > 1:
@@ -615,14 +650,14 @@ class BiguaSimEnvironment:
                             "A batch of agents detected; control command must be a List[List[int]]]."
                         )
 
-                        action = dynamics_model.step(state[agent_name], cmds, dt)
+                        action = dynamics_model.step(state['DynamicsSensor'], cmds)
 
                     else:
                         if not isinstance(cmds, list) or (isinstance(cmds, list) and all(isinstance(el, list) for el in cmds)):
                             raise BiguaSimException(
                             "Single agent detected; control command must be a List[int]."
                         )
-                        action = dynamics_model.step(state[agent_name], [cmds], dt)
+                        action = dynamics_model.step([state['DynamicsSensor']], [cmds])
 
                 for i in range(dynamics_model.batch_size):
                     self.agents[f"{agent_name}-id{i}"].act(action[i])
@@ -691,6 +726,18 @@ class BiguaSimEnvironment:
     def _enqueue_command(self, command_to_send):
         self._command_center.enqueue_command(command_to_send)
 
+
+    def get_action_space(self, main_agent):
+        return self.agents[f'{main_agent}-id0'].action_space
+
+    def get_action_space_constraints(self, main_agent, control_abstraction):
+        control_abstraction_id = self.agents[f'{main_agent}-id0'].abstractions_space[control_abstraction]
+        return self.agents[f'{main_agent}-id0'].control_abstractions[control_abstraction_id]
+    
+    def get_dt(self):
+        return self._dt
+
+
     def add_agent(self, agent_def, is_main_agent=False):
         """Add an agent in the world.
 
@@ -722,6 +769,24 @@ class BiguaSimEnvironment:
         if is_main_agent:
             self._agent = self.agents[agent_def.name]
 
+    # Legacy ``spawn_prop`` names, kept so existing scripts keep working.
+    _PROP_SHAPES = {
+        "box": "/Engine/BasicShapes/Cube.Cube",
+        "sphere": "/Engine/BasicShapes/Sphere.Sphere",
+        "cylinder": "/Engine/BasicShapes/Cylinder.Cylinder",
+        "cone": "/Engine/BasicShapes/Cone.Cone",
+    }
+    _PROP_MATERIALS = {
+        "white": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+        "gold": "/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold",
+        "cobblestone": "/Game/StarterContent/Materials/M_CobbleStone_Rough.M_CobbleStone_Rough",
+        "brick": "/Game/StarterContent/Materials/M_Brick_Clay_Old.M_Brick_Clay_Old",
+        "wood": "/Game/StarterContent/Materials/M_Wood_Pine.M_Wood_Pine",
+        "grass": "/Game/StarterContent/Materials/M_Ground_Grass.M_Ground_Grass",
+        "steel": "/Game/StarterContent/Materials/M_Metal_Steel.M_Metal_Steel",
+        "black": "/Game/HolodeckContent/Agents/HoveringAUV/Materials/color_000000ff.color_000000ff",
+    }
+
     def spawn_prop(
         self,
         prop_type,
@@ -731,76 +796,103 @@ class BiguaSimEnvironment:
         sim_physics=False,
         material="",
         tag="",
+        name=None,
     ):
-        """Spawns a basic prop object in the world like a box or sphere.
+        """Spawns any static mesh from the world's Unreal project as a prop.
 
-        Prop will not persist after environment reset.
+        The prop appears on the next :meth:`tick` or :meth:`step`, and can be removed with
+        :meth:`remove_prop`. Props do not persist after :meth:`reset`.
+
+        The engine resolves meshes and materials by asset reference. Since commands are one-way,
+        a reference it cannot resolve is reported only in the engine log, and no prop appears.
 
         Args:
             prop_type (:obj:`string`):
-                The type of prop to spawn. Can be ``box``, ``sphere``, ``cylinder``, or ``cone``.
+                The static mesh to spawn. One of:
+
+                - a basic shape: ``box``, ``sphere``, ``cylinder`` or ``cone`` (1 meter across at scale 1);
+                - an asset path, e.g. ``/Game/Spawnable/Buoy/SM_Buoy`` or ``/Game/Spawnable/Buoy/SM_Buoy.SM_Buoy``;
+                - an editor "Copy Reference" string, e.g. ``/Script/Engine.StaticMesh'/Game/Spawnable/Buoy/SM_Buoy.SM_Buoy'``;
+                - a bare asset name, e.g. ``SM_Buoy``, if exactly one static mesh has that name.
+
+                In a packaged world only cooked meshes exist: those placed in the map, plus the
+                folders listed under ``DirectoriesToAlwaysCook`` in the engine's ``DefaultGame.ini``
+                (``/Game/Spawnable`` is reserved for meshes meant to be spawned).
 
             location (:obj:`list` of :obj:`float`):
-                The ``[x, y, z]`` location of the prop.
+                The ``[x, y, z]`` location of the prop in meters.
 
             rotation (:obj:`list` of :obj:`float`):
-                The ``[roll, pitch, yaw]`` rotation of the prop.
+                The ``[roll, pitch, yaw]`` rotation of the prop in degrees.
 
             scale (:obj:`list` of :obj:`float`) or (:obj:`float`):
-                The ``[x, y, z]`` scalars to the prop size, where the default size is 1 meter.
-                If given a single float value, then every dimension will be scaled to that value.
+                The ``[x, y, z]`` scale factors of the mesh. A single value scales every dimension.
 
             sim_physics (:obj:`boolean`):
-                Whether the object is mobile and is affected by gravity.
+                Whether the object is mobile and is affected by gravity. Requires the mesh to have
+                simple collision.
 
             material (:obj:`string`):
-                The type of material (texture) to apply to the prop. Can be ``white``, ``gold``,
-                ``cobblestone``, ``brick``, ``wood``, ``grass``, ``steel``, or ``black``. If left
-                empty, the prop will have the a simple checkered gray material.
+                Material applied to every slot of the mesh; empty keeps the mesh's own materials.
+                Either one of ``white``, ``gold``, ``cobblestone``, ``brick``, ``wood``, ``grass``,
+                ``steel`` or ``black``, or a material asset reference in any form accepted by
+                ``prop_type``.
 
             tag (:obj:`string`):
-                The tag to apply to the prop. Useful for task references.
+                The tag to apply to the prop. Useful for task references. It is also read as the
+                semantic segmentation label (e.g. ``Boats``); without a tag, the label comes from
+                the mesh's folder.
+
+            name (:obj:`string`):
+                Unique name to refer to the prop in :meth:`remove_prop`. Generated if omitted.
+
+        Returns:
+            :obj:`str`: The name of the prop.
         """
         location = [0, 0, 0] if location is None else location
         rotation = [0, 0, 0] if rotation is None else rotation
         # if the given scale is an single value, then scale every dimension to that value
-        if not isinstance(scale, list):
+        if not isinstance(scale, (list, tuple)):
             scale = [scale, scale, scale]
-        sim_physics = 1 if sim_physics else 0
 
-        prop_type = prop_type.lower()
-        material = material.lower()
+        if name is None:
+            index = len(self._props)
+            while f"prop{index}" in self._props:
+                index += 1
+            name = f"prop{index}"
+        elif name in self._props:
+            raise BiguaSimException(f"A prop named '{name}' already exists.")
 
-        available_props = ["box", "sphere", "cylinder", "cone"]
-        available_materials = [
-            "white",
-            "gold",
-            "cobblestone",
-            "brick",
-            "wood",
-            "grass",
-            "steel",
-            "black",
-        ]
+        mesh = self._PROP_SHAPES.get(prop_type.lower(), prop_type)
+        material = self._PROP_MATERIALS.get(material.lower(), material)
 
-        if prop_type not in available_props:
-            raise BiguaSimException(
-                "{} not an available prop. Available prop types: {}".format(
-                    prop_type, available_props
+        for value in (name, mesh, material, tag):
+            # Commands are serialized to JSON by concatenation, without escaping.
+            if '"' in value or "\\" in value:
+                raise BiguaSimException(
+                    f"Prop parameters cannot contain double quotes or backslashes: {value!r}"
                 )
-            )
-        if material not in available_materials and material != "":
-            raise BiguaSimException(
-                "{} not an available material. Available material types: {}".format(
-                    material, available_materials
-                )
-            )
+        if not mesh:
+            raise BiguaSimException("prop_type cannot be empty.")
 
-        self.send_world_command(
-            "SpawnProp",
-            num_params=[location, rotation, scale, sim_physics],
-            string_params=[prop_type, material, tag],
+        self._enqueue_command(
+            SpawnPropCommand(name, mesh, location, rotation, scale, sim_physics, material, tag)
         )
+        self._props.add(name)
+        return name
+
+    def remove_prop(self, name):
+        """Removes a prop spawned with :meth:`spawn_prop`.
+
+        The prop disappears on the next :meth:`tick` or :meth:`step`.
+
+        Args:
+            name (:obj:`str`): The name returned by :meth:`spawn_prop`.
+        """
+        if name not in self._props:
+            raise BiguaSimException(f"No prop named '{name}' exists.")
+        self._enqueue_command(RemovePropCommand(name))
+        self._props.remove(name)
 
     def draw_line(self, start, end, color=None, thickness=10.0, lifetime=1.0):
         """Draws a debug line in the world
@@ -880,6 +972,15 @@ class BiguaSimEnvironment:
         """
         # test_viewport_capture_after_teleport
         self._enqueue_command(TeleportCameraCommand(location, rotation))
+
+    def move_agent(self, main_name, location, rotation, idxs=0):
+        if isinstance(idxs, list):
+            for idx in idxs:
+                self.agents[f"{main_name}-id{idx}"].teleport(location[idx], rotation[idx])
+
+        else:
+            self.agents[f"{main_name}-id{idxs}"].teleport(location, rotation)
+
 
     def should_render_viewport(self, render_viewport):
         """Controls whether the viewport is rendered or not
@@ -962,7 +1063,9 @@ class BiguaSimEnvironment:
             "-ForceRes",
             "-ResX=" + str(self._window_size[1]),
             "-ResY=" + str(self._window_size[0]),
-            "--HolodeckUUID=" + self._uuid,
+            # An empty "--HolodeckUUID=" makes the engine (FParse::Value) take the next argument as the UUID, so
+            # its shared memory names never match the client's; without the flag it uses "" as well.
+            *(["--HolodeckUUID=" + self._uuid] if self._uuid else []),
             "-TicksPerSec=" + str(self._ticks_per_sec),
             "-FramesPerSec=" + str(self._frames_per_sec),
             "-EnvMinX=" + str(self._env_min[0]),
@@ -1013,7 +1116,9 @@ class BiguaSimEnvironment:
             "-ForceRes",
             "-ResX=" + str(self._window_size[1]),
             "-ResY=" + str(self._window_size[0]),
-            "--HolodeckUUID=" + self._uuid,
+            # An empty "--HolodeckUUID=" makes the engine (FParse::Value) take the next argument as the UUID, so
+            # its shared memory names never match the client's; without the flag it uses "" as well.
+            *(["--HolodeckUUID=" + self._uuid] if self._uuid else []),
             "-TicksPerSec=" + str(self._ticks_per_sec),
             "-FramesPerSec=" + str(self._frames_per_sec),
             "-EnvMinX=" + str(self._env_min[0]),
@@ -1089,37 +1194,40 @@ class BiguaSimEnvironment:
             else:
                 st = self._state_dict[self._agent.name]
 
-            t = st.pop('t')
+            return st
+        
 
-            state = dict()
-            state[next(iter(self._dynamics_dict))] = [st]   
-            state['t'] = t
-            return state
         return self._get_full_state()
 
     def _get_full_state(self):
-        # rebuild state dictionary to drop/change data as needed
         if self._copy_state:
             state = dict()
             for agent_name, agent in self.agents.items():
                 main_agent = agent_name.split('-id')[0]
-                if not main_agent in state.keys():
-                    state[main_agent] = list()
+                if not main_agent in state:
+                    state[main_agent] = dict()
 
-                agent_state = dict()
+
                 for sensor_name, sensor in agent.sensors.items():
+                    if not sensor_name in state[main_agent]:
+                        state[main_agent][sensor_name] = list()
                     data = sensor.sensor_data
                     if isinstance(data, np.ndarray):
-                        agent_state[sensor_name] = np.copy(data)
+                        state[main_agent][sensor_name].append(np.copy(data))
                     elif data is not None:
-                        agent_state[sensor_name] = data
+                        state[main_agent][sensor_name].append(data)
 
-                state[main_agent].append(agent_state)
 
             state["t"] = self._num_ticks / self._ticks_per_sec
 
         else:
             state = self._state_dict
+
+        agents = set(state) - {'t'}
+        if len(agents) == 1:
+            single_state = state[next(iter(agents))]
+            single_state['t'] = state['t']
+            return single_state
 
         return state
 

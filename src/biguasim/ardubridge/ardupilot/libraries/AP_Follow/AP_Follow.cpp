@@ -628,7 +628,7 @@ bool AP_Follow::handle_global_position_int_message(const mavlink_message_t &msg)
         case Location::AltFrame::ABOVE_HOME:
             target_location.set_alt_cm(packet.relative_alt * 0.1, Location::AltFrame::ABOVE_HOME);
             break;
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#if APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduHydrone)
         case Location::AltFrame::ABOVE_TERRAIN:
             /// Altitude comes in as AMSL
             target_location.set_alt_cm(packet.alt * 0.1, Location::AltFrame::ABSOLUTE);

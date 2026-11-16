@@ -1,0 +1,66 @@
+# LEGACY (before ArduHydrone): the Hydrone on stock ArduPlane as a QuadPlane, with scripts/hydrone_medium.lua.
+# Kept for the QuadPlane profile (vehicle.hydrone_quadplane_profile) until ArduHydrone flies under water.
+# Hydrone (hybrid aerial-underwater vehicle) on ArduPlane as a QuadPlane, loaded after ArduPilot's
+# default_params/quadplane.parm. The scripts/hydrone_medium.lua script adapts it to the water.
+# BiguaSim model: dynamics.hauv.OctaCopterFourAirFourWaterCross, 2.7 kg: four air rotors 0..592.4 rad/s (only push
+# out of the water) and four water thrusters -278.9..278.9 rad/s (only push in it).
+
+# VTOL only: quad plus on SERVO1..4. The bridge sends MOT1..4 to the right, left, front and rear air rotors.
+Q_ENABLE        1
+Q_FRAME_CLASS   1
+Q_FRAME_TYPE    0
+SERVO1_FUNCTION 33
+SERVO2_FUNCTION 34
+SERVO3_FUNCTION 35
+SERVO4_FUNCTION 36
+SERVO3_MIN      1000
+SERVO3_MAX      2000
+# Water thrusters on SERVO5..8 (front vertical, right forward, rear vertical, left forward), driven by the script.
+SERVO5_FUNCTION 94
+SERVO6_FUNCTION 95
+SERVO7_FUNCTION 96
+SERVO8_FUNCTION 97
+# No wing: never transition or assist, guided targets flown as VTOL.
+Q_ASSIST_SPEED  -1
+Q_GUIDED_MODE   1
+ARSPD_TYPE      0
+ARSPD_USE       0
+
+# The bridge maps 1000..2000 us linearly to 0..592.4 rad/s: thrust grows with the square of the output.
+Q_M_PWM_MIN     1000
+Q_M_PWM_MAX     2000
+Q_M_THST_EXPO   1.0
+Q_M_SPIN_ARM    0.02
+Q_M_SPIN_MIN    0.03
+Q_M_SPIN_MAX    1.0
+Q_M_BAT_VOLT_MAX 0
+# Hover: 26.5 N of the 498 N the four rotors give (thrust-to-weight 19)
+Q_M_THST_HOVER  0.053
+
+# Forward thrust instead of tilt (Q_FWD_*): the script turns it on under water, where the horizontal thrusters push.
+Q_FWD_THR_USE   0
+Q_FWD_THR_GAIN  1.0
+Q_FWD_PIT_LIM   0
+Q_VFWD_GAIN     0
+# No ground-strike cutoff of the forward thrust (firmware/patches/arduplane-vfwd-alt-off.patch): the height above
+# home is negative under water, where the forward thrusters work, and the cutoff kept them at zero.
+Q_VFWD_ALT      -1
+
+# One IMU sample per physics step (400 Hz): ArduPilot wants them at 1.8 x its loop rate or more.
+SCHED_LOOP_RATE 200
+
+# The water-mode script
+SCR_ENABLE      1
+SCR_HEAP_SIZE   100000
+
+# Rate gains, 1/5 of quadplane.parm's: the Hydrone has thrust-to-weight 19 (about 10x a usual quad's control
+# authority) and with them the rotors swung between minimum and 230 rad/s, raising the mean thrust: it climbed away
+# at neutral stick. Offline (OfflineWorld, 400 Hz): QLOITER hold within 5 mm, roll/pitch steady to 0.02 deg.
+Q_A_RAT_RLL_P   0.0216
+Q_A_RAT_RLL_I   0.0216
+Q_A_RAT_RLL_D   0.0002
+Q_A_RAT_PIT_P   0.0206
+Q_A_RAT_PIT_I   0.0206
+Q_A_RAT_PIT_D   0.0002
+Q_A_RAT_YAW_P   0.04
+Q_A_RAT_YAW_I   0.004

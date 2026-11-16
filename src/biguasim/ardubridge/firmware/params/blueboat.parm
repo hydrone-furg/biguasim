@@ -1,0 +1,27 @@
+# BlueBoat on Rover (boat), loaded after ArduPilot's default_params/rover.parm and rover-skid.parm.
+# BiguaSim model: dynamics.marine.MarinePlant as a surface vessel, 17 kg, two T200 at -295.75..288.08 rad/s,
+# 3 m/s at full thrust.
+
+FRAME_CLASS     2
+
+# Skid steering, as on the BlueBoat: SERVO1 ThrottleLeft (port thruster), SERVO3 ThrottleRight (starboard).
+# The bridge maps 1100..1900 us to the thrust (1500: stop).
+SERVO1_FUNCTION 73
+SERVO3_FUNCTION 74
+SERVO1_MIN      1100
+SERVO1_TRIM     1500
+SERVO1_MAX      1900
+SERVO3_MIN      1100
+SERVO3_TRIM     1500
+SERVO3_MAX      1900
+
+# Drag grows with the square of the speed: 1.5 m/s takes (1.5 / 3)^2 = 25 % of the thrust.
+CRUISE_SPEED    1.5
+CRUISE_THROTTLE 25
+WP_SPEED        1.5
+
+# Turn-rate loop: the hull has no keel and does not run straight by itself (with even thrust it drifts into a
+# 15-20 deg/s turn within 8 s), so the default P 0.2 / I 0.2 let the heading swing +-50 deg on a straight leg.
+# Offline (SITL + OfflineWorld) P 2 / I 1 holds the path heading within 3-6 deg and calms the thrusters.
+ATC_STR_RAT_P   2.0
+ATC_STR_RAT_I   1.0

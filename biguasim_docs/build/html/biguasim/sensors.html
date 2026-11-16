@@ -135,6 +135,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.IMUSensor.dtype"><code class="docutils literal notranslate"><span class="pre">IMUSensor.dtype</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#biguasim.sensors.IRCamera"><code class="docutils literal notranslate"><span class="pre">IRCamera</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.IRCamera.data_shape"><code class="docutils literal notranslate"><span class="pre">IRCamera.data_shape</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.IRCamera.dtype"><code class="docutils literal notranslate"><span class="pre">IRCamera.dtype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.IRCamera.sensor_data"><code class="docutils literal notranslate"><span class="pre">IRCamera.sensor_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.IRCamera.set_ticks_per_capture"><code class="docutils literal notranslate"><span class="pre">IRCamera.set_ticks_per_capture()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#biguasim.sensors.ImagingSonar"><code class="docutils literal notranslate"><span class="pre">ImagingSonar</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.ImagingSonar.data_shape"><code class="docutils literal notranslate"><span class="pre">ImagingSonar.data_shape</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.ImagingSonar.dtype"><code class="docutils literal notranslate"><span class="pre">ImagingSonar.dtype</span></code></a></li>
@@ -149,6 +156,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#biguasim.sensors.MagnetometerSensor"><code class="docutils literal notranslate"><span class="pre">MagnetometerSensor</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.MagnetometerSensor.data_shape"><code class="docutils literal notranslate"><span class="pre">MagnetometerSensor.data_shape</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.MagnetometerSensor.dtype"><code class="docutils literal notranslate"><span class="pre">MagnetometerSensor.dtype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#biguasim.sensors.NormalsCamera"><code class="docutils literal notranslate"><span class="pre">NormalsCamera</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.NormalsCamera.data_shape"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.data_shape</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.NormalsCamera.dtype"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.dtype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.NormalsCamera.sensor_data"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.sensor_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biguasim.sensors.NormalsCamera.set_ticks_per_capture"><code class="docutils literal notranslate"><span class="pre">NormalsCamera.set_ticks_per_capture()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#biguasim.sensors.OpticalModemSensor"><code class="docutils literal notranslate"><span class="pre">OpticalModemSensor</span></code></a><ul>
@@ -316,14 +330,20 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.IMUSensor" title="biguasim.sensors.IMUSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IMUSensor</span></code></a>(client, agent_name, agent_type[, ...])</p></td>
 <td><p>Inertial Measurement Unit sensor.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.ImagingSonar" title="biguasim.sensors.ImagingSonar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImagingSonar</span></code></a>(client, agent_name, agent_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.IRCamera" title="biguasim.sensors.IRCamera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IRCamera</span></code></a>(client, agent_name, agent_type[, ...])</p></td>
+<td><p>Captures the agent's vision in Infrared (Thermal).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.ImagingSonar" title="biguasim.sensors.ImagingSonar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImagingSonar</span></code></a>(client, agent_name, agent_type)</p></td>
 <td><p>Simulates an imaging sonar.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.LocationSensor" title="biguasim.sensors.LocationSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocationSensor</span></code></a>(client, agent_name, agent_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.LocationSensor" title="biguasim.sensors.LocationSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocationSensor</span></code></a>(client, agent_name, agent_type)</p></td>
 <td><p>Gets the location of the agent in the world.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.MagnetometerSensor" title="biguasim.sensors.MagnetometerSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MagnetometerSensor</span></code></a>(client, agent_name, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.MagnetometerSensor" title="biguasim.sensors.MagnetometerSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MagnetometerSensor</span></code></a>(client, agent_name, ...)</p></td>
 <td><p>Gets the global x-axis (or given vector) in the local frame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.NormalsCamera" title="biguasim.sensors.NormalsCamera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NormalsCamera</span></code></a>(client, agent_name, agent_type)</p></td>
+<td><p>Captures the surface normals of the scene.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.OpticalModemSensor" title="biguasim.sensors.OpticalModemSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpticalModemSensor</span></code></a>(client, agent_name, ...)</p></td>
 <td><p>Handles communication between agents using an optical modem.</p></td>
@@ -1177,6 +1197,87 @@ following options:</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="biguasim.sensors.IRCamera">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">IRCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.IRCamera" title="Link to this definition"></a></dt>
+<dd><p>Captures the agent’s vision in Infrared (Thermal).</p>
+<p>Thermal physics (based on Planck’s Law) are calculated automatically
+during initialization using a predefined material temperature palette.
+The output is a heat map image applying the OpenCV JET colormap.</p>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.IRCamera.data_shape" title="biguasim.sensors.IRCamera.data_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_shape</span></code></a></p></td>
+<td><p>The shape of the sensor data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.IRCamera.dtype" title="biguasim.sensors.IRCamera.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a></p></td>
+<td><p>The type of data in the sensor</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.IRCamera.sensor_data" title="biguasim.sensors.IRCamera.sensor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sensor_data</span></code></a></p></td>
+<td><p>Retrieves the current thermal image.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.IRCamera.set_ticks_per_capture" title="biguasim.sensors.IRCamera.set_ticks_per_capture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ticks_per_capture</span></code></a>(ticks_per_capture)</p></td>
+<td><p>Sets the update rate of the sensor physics tick.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.sensors.IRCamera.data_shape">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.IRCamera.data_shape" title="Link to this definition"></a></dt>
+<dd><p>The shape of the sensor data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sensor data shape</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.sensors.IRCamera.dtype">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.IRCamera.dtype" title="Link to this definition"></a></dt>
+<dd><p>The type of data in the sensor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Type of sensor data</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy dtype</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.sensors.IRCamera.sensor_data">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.IRCamera.sensor_data" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the current thermal image.</p>
+<p>Reads the raw segmentation IDs, maps them to the computed thermal intensities,
+and applies a JET colormap for visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Color-mapped thermal image array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biguasim.sensors.IRCamera.set_ticks_per_capture">
+<span class="sig-name descname"><span class="pre">set_ticks_per_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks_per_capture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.IRCamera.set_ticks_per_capture" title="Link to this definition"></a></dt>
+<dd><p>Sets the update rate of the sensor physics tick.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="biguasim.sensors.ImagingSonar">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">ImagingSonar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ImagingSonar'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.ImagingSonar" title="Link to this definition"></a></dt>
 <dd><p>Simulates an imaging sonar. See <a class="reference internal" href="../usage/scenarios.html#configure-octree"><span class="std std-ref">Octree Configuration</span></a> for more on
@@ -1372,6 +1473,88 @@ following options:</p>
 <dd class="field-even"><p>numpy dtype</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biguasim.sensors.NormalsCamera">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biguasim.sensors.</span></span><span class="sig-name descname"><span class="pre">NormalsCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NormalsCamera'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.NormalsCamera" title="Link to this definition"></a></dt>
+<dd><p>Captures the surface normals of the scene.</p>
+<p>Provides a geometric understanding of the environment by returning
+a 3D vector (X, Y, Z) for each pixel, representing the orientation
+of the surface relative to the camera.</p>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.NormalsCamera.data_shape" title="biguasim.sensors.NormalsCamera.data_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_shape</span></code></a></p></td>
+<td><p>The shape of the sensor data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#biguasim.sensors.NormalsCamera.dtype" title="biguasim.sensors.NormalsCamera.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a></p></td>
+<td><p>The type of data in the sensor</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.NormalsCamera.sensor_data" title="biguasim.sensors.NormalsCamera.sensor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sensor_data</span></code></a></p></td>
+<td><p>Retrieves and processes the surface normals data.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biguasim.sensors.NormalsCamera.set_ticks_per_capture" title="biguasim.sensors.NormalsCamera.set_ticks_per_capture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ticks_per_capture</span></code></a>(ticks_per_capture)</p></td>
+<td><p>Sets the update rate of the sensor physics tick.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.sensors.NormalsCamera.data_shape">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_shape</span></span><a class="headerlink" href="#biguasim.sensors.NormalsCamera.data_shape" title="Link to this definition"></a></dt>
+<dd><p>The shape of the sensor data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sensor data shape</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.sensors.NormalsCamera.dtype">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#biguasim.sensors.NormalsCamera.dtype" title="Link to this definition"></a></dt>
+<dd><p>The type of data in the sensor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Type of sensor data</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy dtype</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biguasim.sensors.NormalsCamera.sensor_data">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_data</span></span><a class="headerlink" href="#biguasim.sensors.NormalsCamera.sensor_data" title="Link to this definition"></a></dt>
+<dd><p>Retrieves and processes the surface normals data.</p>
+<p>Reads the raw BGRA buffer from the Unreal Engine, normalizes the
+color values to a geometric direction range [-1.0, 1.0], and
+swaps channels to output standard XYZ vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A float32 array containing the (X, Y, Z) normal vectors.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biguasim.sensors.NormalsCamera.set_ticks_per_capture">
+<span class="sig-name descname"><span class="pre">set_ticks_per_capture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks_per_capture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biguasim.sensors.NormalsCamera.set_ticks_per_capture" title="Link to this definition"></a></dt>
+<dd><p>Sets the update rate of the sensor physics tick.</p>
 </dd></dl>
 
 </dd></dl>

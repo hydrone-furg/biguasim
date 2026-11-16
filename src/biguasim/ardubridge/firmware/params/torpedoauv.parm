@@ -1,0 +1,29 @@
+# TorpedoAUV (REMUS 100 class) on ArduSub with the torpedo frame of firmware/patches/ardusub-torpedo-frame.patch,
+# loaded after ArduPilot's default_params/sub.parm.
+# BiguaSim model: dynamics.uuv.TorpedoAUV, 37 kg, fins +-20 deg, propeller -1525..1525 rpm.
+
+# Torpedo frame: MOT1 propeller, MOT2 / MOT3 top / bottom rudder, MOT4 / MOT5 left / right stern plane.
+# The fins only act while the vehicle moves; depth is held by pitching.
+FRAME_CONFIG    8
+MOT_PWM_MIN     1100
+MOT_PWM_MAX     1900
+
+# One IMU sample per physics step (200 Hz): ArduPilot wants them at 1.8 x its loop rate or more.
+SCHED_LOOP_RATE 100
+
+# Depth through pitch: the stern planes give ~0.5 rad/s^2 of pitch at cruise speed, and the climb demand (the
+# frame's climb factor) and the pitch loop both drive them. ArduSub's default depth gains (made for vertical
+# thrusters) banged the planes between +-20 deg and swung the depth by 3 m; these hold it within 0.1 m offline,
+# with a weak pitch angle hold (it would fight the climb) and pitch rate damping.
+PSC_D_POS_P     0.5
+PSC_D_VEL_P     2
+PSC_D_ACC_P     0.1
+PSC_D_ACC_I     0.02
+ATC_ANG_PIT_P   0.5
+ATC_RAT_PIT_P   1.0
+ATC_RAT_PIT_I   0
+
+# Heading with the rudders (as weak as the planes): after a turn the default yaw rate gains overshot 11 deg and
+# drifted 8 deg back; these overshoot 3 deg and hold within 2 deg.
+ATC_RAT_YAW_P   1.0
+ATC_RAT_YAW_I   0.1
